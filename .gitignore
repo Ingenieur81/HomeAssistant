@@ -1,0 +1,26 @@
+# An * ensures that everything will be ignored.
+*
+
+# Whitelist
+!*.yaml
+!.gitignore
+!*.md
+
+# Ignore folders.
+.storage
+.cloud
+.google.token
+SSL
+.vscode
+www
+python_scripts
+deps
+
+# Blacklist
+ip_bans.yaml
+secrets.yaml
+known_devices.yaml
+google_calendars.yaml
+legacy_automations.yaml
+update_ui-lovelace_v2.yaml
+zones.yaml

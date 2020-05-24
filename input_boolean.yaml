@@ -1,0 +1,17 @@
+  weather:
+  afstandbediening:
+    name: Afstandbediening
+    initial: off
+    icon: mdi:remote
+  regenachtigedag:
+    name: Regenachtige dag
+    initial: off
+    icon: mdi:weather-rainy
+  maintenance_mode:
+    name: Maintenance mode
+    initial: off
+    icon: mdi:wrench
+  vakantie_mode:
+    name: Vakantie mode
+    initial: off
+    icon: mdi:beach

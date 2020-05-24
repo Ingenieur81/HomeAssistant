@@ -1,0 +1,250 @@
+  # Dutch Smart Meter Requirements (DSMR)
+  - platform: dsmr
+    port: /dev/ttyUSB0
+    dsmr_version: 4
+    precision: 2
+  # Power usage statistics (used for dryer automation)
+  - platform: statistics
+    name: statistics on power consumption
+    entity_id: sensor.verbruikelectra
+    precision: 0
+    max_age:
+      minutes: 15
+  # Installed HA version
+  - platform: version
+    name: Installed Version
+  # Latest Available HA Version
+  - platform: version
+    name: Latest Available Version
+    beta: false
+    #image: docker
+    source: docker
+  # the moon
+  - platform: moon
+  # Weather sensors
+  - platform: buienradar
+    #name: Schiphol
+    monitored_conditions:
+      - stationname
+      - conditioncode
+      - condition
+      - conditiondetailed
+      - conditionexact
+      - symbol
+      - humidity
+      - temperature
+      - groundtemperature
+      - windspeed
+      - windforce
+      - winddirection
+      - windazimuth
+      - pressure
+      - visibility
+      - windgust
+      - precipitation
+      - irradiance
+      - precipitation_forecast_average
+      - precipitation_forecast_total
+      # conditions for forecasted data:
+      - symbol_1d
+      - symbol_2d
+      - symbol_3d
+      - symbol_4d
+      - symbol_5d
+      - temperature_1d
+      - temperature_2d
+      - temperature_3d
+      - temperature_4d
+      - temperature_5d
+      - rainchance_1d
+      - rainchance_2d
+      - rainchance_3d
+      - rainchance_4d
+      - rainchance_5d
+      - sunchance_1d
+      - sunchance_2d
+      - sunchance_3d
+      - sunchance_4d
+      - sunchance_5d
+      - rain_1d
+      - rain_2d
+      - rain_3d
+      - rain_4d
+      - rain_5d
+  
+  - platform: darksky
+    api_key: !secret darksky_api_key
+    forecast:
+      - 1
+    language: nl
+    scan_interval: 
+      minutes: 3
+    monitored_conditions:
+      - temperature
+      - apparent_temperature
+      - humidity
+      - precip_probability
+      - precip_intensity
+      - precip_type
+      - wind_speed
+      - wind_bearing
+      - pressure
+      - icon
+      - summary
+      - minutely_summary
+      - hourly_summary
+      - daily_summary
+
+  # MQTT sensors
+  # Binnen, hue_ambient_light_sensor_1, hue_temperature_sensor_1
+  - platform: mqtt
+    name: Bewegingsdetectie woonkamer
+    state_topic: hue/woonkamer_sensor/presence
+    icon: mdi:run
+
+  - platform: mqtt
+    name: Woonkamer Hue Light Level
+    state_topic: hue/woonkamer_sensor/lightlevel
+    value_template: "{{ (10 ** ((( value | int) - 1 ) / 10000 ) | round(0)) }}"
+    #According to the Hue API: lightlevel = 10000 * log10(lux) + 1.
+    unit_of_measurement: lx
+
+  - platform: mqtt
+    name: Woonkamer Hue Temperature
+    state_topic: hue/woonkamer_sensor/temperature
+    value_template: "{{ (value | int) / 100 }}"
+    unit_of_measurement: C
+    icon: mdi:temperature-celsius
+
+#  - platform: mqtt
+#    name: Batterij woonkamer hue sensor
+#    state_topic: hue/woonkamer_sensor/lightlevel/battery_level
+#    value_template: "{{ (value | int) }}"
+#    unit_of_measurement: '%'
+
+#  - platform: mqtt
+#    name: Batterij woonkamer hue schakelaar
+#    state_topic: hue/woonkamer_schakelaar/battery
+#    value_template: "{{ (value | int) }}"
+#    unit_of_measurement: '%'
+
+  - platform: mqtt
+    name: Afstandbediening woonkamer
+    state_topic: hue/woonkamer_schakelaar/buttonevent
+    value_template: "{{ (value | int) }}"
+  
+  # Buiten: hue_outdoor_motion_sensor_1_light_level, hue_outdoor_motion_sensor_1_temperature
+  - platform: mqtt
+    name: Bewegingsdetectie buiten
+    state_topic: hue/buiten_sensor/presence
+    icon: mdi:run
+
+  - platform: mqtt
+    name: Buiten Hue Light Level
+    state_topic: hue/buiten_sensor/lightlevel
+    value_template: "{{ (10 ** ((( value | int) - 1 ) / 10000 ) | round(0)) }}"
+    #According to the Hue API: lightlevel = 10000 * log10(lux) + 1.
+    unit_of_measurement: lx
+
+  - platform: mqtt
+    name: Buiten Hue Temperature
+    state_topic: hue/buiten_sensor/temperature
+    value_template: "{{ (value | int) / 100 }}"
+    unit_of_measurement: C
+    icon: mdi:temperature-celsius
+
+#  - platform: mqtt
+#    name: Batterij buiten hue sensor
+#    state_topic: hue/buiten_sensor/lightlevel/battery_level
+#    value_template: "{{ (value | int) }}"
+#    unit_of_measurement: '%'
+  
+  # Z-Wave sensors
+  - platform: template
+    sensors:
+      woonkamer_z_wave_light_level:
+        friendly_name: Woonkamer Z wave Light Level
+        unit_of_measurement: 'lx'
+        value_template: >
+          {{ (( states('sensor.aeotec_limited_zwa005_trisensor_luminance') | float) | round(0)) }}
+  
+  - platform: template
+    sensors:
+      batterij_zwave_binnen_sensor:
+        friendly_name: Batterij Z-wave binnen sensor
+        unit_of_measurement: '%'
+        value_template: >
+          {{ state_attr('zwave.aeotec_limited_zwa005_trisensor', 'battery_level') }}
+        device_class: battery
+      batterij_hue_buiten_sensor:
+        friendly_name: Batterij buiten sensor
+        unit_of_measurement: '%'
+        value_template: >
+          {{ state_attr('sensor.hue_outdoor_motion_sensor_1_light_level', 'battery_level') }}
+        device_class: battery
+      batterij_hue_binnen_sensor:
+        friendly_name: Batterij hue binnen sensor
+        unit_of_measurement: '%'
+        value_template: >
+          {{ state_attr('sensor.woonkamer_sensor_light_level', 'battery_level') }}
+        device_class: battery
+
+  - platform: min_max
+    name: gemiddeld_lichtniveau
+    type: mean
+    entity_ids:
+      - sensor.hue_outdoor_motion_sensor_1_light_level
+      - sensor.woonkamer_sensor_light_level
+      - sensor.woonkamer_z_wave_light_level
+
+  - platform: min_max
+    name: gemiddelde_temperatuur
+    type: mean
+    entity_ids:
+      - sensor.woonkamer_hue_temperature
+      - sensor.hue_outdoor_motion_sensor_1_temperature
+      - sensor.aeotec_limited_zwa005_trisensor_temperature
+      
+  # Tijd en datum
+  - platform: time_date
+    display_options:
+      - 'time'
+      - 'date'
+      - 'date_time'
+      - 'date_time_iso'
+      - 'time_date'
+      - 'time_utc'
+      - 'beat'
+  
+  # Deurbel
+  #- platform: ring
+    # NS
+  - platform: nederlandse_spoorwegen
+    #email: !secret ns_username
+    api_key: !secret ns_prim_api
+    routes:
+    - name: Hoofddorp-Leiden
+      from: Hfd
+      to: Ledn
+  
+  - platform: template
+    sensors:
+      zonnestand:
+        friendly_name: "Zonnestand"
+        unit_of_measurement: 'graden'
+        value_template: >
+          {{ state_attr('sun.sun', 'elevation') | float }}
+      zon_azimuth:
+        friendly_name: "Zon Azimuth"
+        unit_of_measurement: 'graden'
+        value_template: >
+          {{ state_attr('sun.sun', 'azimuth') | float }}
+      treintijdvolgende:
+        friendly_name: "Volgende Trein Hoofddorp"
+        value_template: >
+          {{ state_attr('sensor.hoofddorp_leiden', 'next') }}
+      verbruikelectra:
+        friendly_name: "Huidige electriciteit verbruik"
+        unit_of_measurement: 'W'
+        value_template: >
+          {{ (( states('sensor.power_consumption') | float) * 1000 | round(0)) }}

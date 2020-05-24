@@ -1,0 +1,87 @@
+  meter_readings:
+    name: Meter readings
+    entities:
+      - sensor.energy_consumption_tarif_1
+      - sensor.energy_consumption_tarif_2
+      - sensor.energy_production_tarif_1
+      - sensor.energy_production_tarif_2
+      - sensor.power_tariff
+      - sensor.hourly_gas_consumption
+      - sensor.gas_consumption
+      - sensor.power_consumption
+      - sensor.power_consumption_phase_l1
+      - sensor.power_consumption_phase_l2
+      - sensor.power_consumption_phase_l3
+      - sensor.power_production
+      - sensor.power_production_phase_l1
+      - sensor.power_production_phase_l2
+      - sensor.power_production_phase_l3
+      - sensor.voltage_phase_l1
+      - sensor.voltage_phase_l2
+      - sensor.voltage_phase_l3 
+      - sensor.voltage_sags_phase_l1
+      - sensor.voltage_sags_phase_l2
+      - sensor.voltage_sags_phase_l3
+      - sensor.voltage_swells_phase_l1
+      - sensor.voltage_swells_phase_l2
+      - sensor.voltage_swells_phase_l3
+      - sensor.current_phase_l1 
+      - sensor.current_phase_l2
+      - sensor.current_phase_l3
+  buitenverlichting:
+    - switch.fibaro_system_fgs213_switch_switch_2
+    - switch.fibaro_system_fgs213_switch_switch_4
+  tuinverlichting:
+    - switch.aeon_labs_zw116_nano_switch_switch
+  gertjan:
+    - device_tracker.oneplus3t
+    - device_tracker.google_maps_110522772272920814159
+  lisette:
+    - device_tracker.android77ac869bd554e5b7
+    - device_tracker.google_maps_110522772272920814159
+  gezin:
+    - group.gertjan
+    - group.lisette
+  familie:
+    - group.gertjan
+    - group.lisette
+    - device_tracker.galaxys9
+    - device_tracker.iphone_2
+  woonkamer:
+    #- light.hue_ambiance_lamp_1
+    #- light.hue_ambiance_lamp_3
+    #- light.hue_ambiance_lamp_2
+    #- light.color_temperature_light_1
+    #- light.color_temperature_light_1_2
+    #- light.color_temperature_light_1_3
+    #- light.color_temperature_light_1_4
+    - light.bijkamer
+    - light.vitrinekast
+    - light.woonkamer
+    - light.woonkamer_midden
+    - light.woonkamer_voor_boven
+    - light.woonkamer_voor_midden
+    - light.woonkamer_voor_onder
+    - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch # vitrinekast
+    - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2 # plant met lamp
+    #- switch.VitrineKast
+  keuken:
+    - light.color_temperature_light_1
+    - light.color_temperature_light_2
+    - light.color_temperature_light_3
+  hal:
+    - light.hal_plafond   
+  alle_verlichting:
+    - group.buitenverlichting
+    - group.tuinverlichting
+    - group.woonkamer
+    - group.hal
+  televisie_activiteit:
+    - switch.gaming_ps4_harmony_activity
+    - switch.media_center_harmony_activity 
+    - switch.muziek_harmony_activity 
+    - switch.netflix_kijken_harmony_activity 
+    - switch.tv_kijken_harmony_activity 
+  alle_screens:
+    - cover.grote_raam
+    - cover.keukenraam

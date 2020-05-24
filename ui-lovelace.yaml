@@ -1,0 +1,10 @@
+title: Thuis
+# Include external resources
+resources: !include /config/lovelace/resources/resources.yaml
+# custom-header
+custom_header:
+  background: var(--primary-background-color);
+  elements_color: var(--primary-text-color)
+  compact_mode: true
+# Views
+views: !include_dir_list /config/lovelace/views/

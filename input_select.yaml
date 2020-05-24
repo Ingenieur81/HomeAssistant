@@ -1,0 +1,8 @@
+  droger_status:
+    name: Droger Status
+    options:
+      - Drogen
+      - Klaar
+      - Standby
+      - Uit
+    initial: Uit
