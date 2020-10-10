@@ -1,4 +1,7 @@
   # Dutch Smart Meter Requirements (DSMR)
+  # usbserial.ko and ftdi_sio.ko kernel modules are required
+  # sudo insmod /lib/modules/usbserial.ko
+  # sudo insmod /lib/modules/ftdi_sio.ko
   - platform: dsmr
     port: /dev/ttyUSB0
     dsmr_version: 4
@@ -7,13 +10,23 @@
   - platform: statistics
     name: statistics on power consumption
     entity_id: sensor.verbruikelectra
+    # Elke seconde voor 15 minuten: 15x60 afgerond
+    sampling_size: 100
     precision: 0
     max_age:
       minutes: 15
+  - platform: statistics
+    name: long term statistics on power consumption
+    entity_id: sensor.verbruikelectra
+    # Elke seconde voor 7 dagen: 24x60x60x7 afgerond
+    sampling_size: 35000
+    precision: 0
+    max_age:
+      days: 7
   # Installed HA version
   - platform: version
     name: Installed Version
-  # Latest Available HA Version
+  # Latest available HA Version
   - platform: version
     name: Latest Available Version
     beta: false
@@ -25,53 +38,49 @@
   - platform: buienradar
     #name: Schiphol
     monitored_conditions:
-      - stationname
-      - conditioncode
-      - condition
-      - conditiondetailed
-      - conditionexact
-      - symbol
-      - humidity
-      - temperature
-      - groundtemperature
-      - windspeed
-      - windforce
-      - winddirection
-      - windazimuth
-      - pressure
-      - visibility
-      - windgust
-      - precipitation
-      - irradiance
-      - precipitation_forecast_average
-      - precipitation_forecast_total
-      # conditions for forecasted data:
-      - symbol_1d
-      - symbol_2d
-      - symbol_3d
-      - symbol_4d
-      - symbol_5d
-      - temperature_1d
-      - temperature_2d
-      - temperature_3d
-      - temperature_4d
-      - temperature_5d
-      - rainchance_1d
-      - rainchance_2d
-      - rainchance_3d
-      - rainchance_4d
-      - rainchance_5d
-      - sunchance_1d
-      - sunchance_2d
-      - sunchance_3d
-      - sunchance_4d
-      - sunchance_5d
-      - rain_1d
-      - rain_2d
-      - rain_3d
-      - rain_4d
-      - rain_5d
-  
+    - stationname
+    - conditioncode
+    - condition
+    - conditiondetailed
+    - conditionexact
+    - symbol
+    - feeltemperature
+    - temperature
+    - groundtemperature
+    - windspeed
+    - windforce
+    - windgust
+    - precipitation
+    - precipitation_forecast_average
+    - precipitation_forecast_total
+    - rainlast24hour
+    - rainlasthour
+    # conditions for forecasted data:
+    - symbol_1d
+    - symbol_2d
+    - symbol_3d
+    - symbol_4d
+    - symbol_5d
+    - temperature_1d
+    - temperature_2d
+    - temperature_3d
+    - temperature_4d
+    - temperature_5d
+    - mintemp_1d
+    - mintemp_2d
+    - mintemp_3d
+    - mintemp_4d
+    - mintemp_5d
+    - rainchance_1d
+    - rainchance_2d
+    - rainchance_3d
+    - rainchance_4d
+    - rainchance_5d
+    - rain_1d
+    - rain_2d
+    - rain_3d
+    - rain_4d
+    - rain_5d
   - platform: darksky
     api_key: !secret darksky_api_key
     forecast:
@@ -218,7 +227,8 @@
   
   # Deurbel
   #- platform: ring
-    # NS
+
+  # NS
   - platform: nederlandse_spoorwegen
     #email: !secret ns_username
     api_key: !secret ns_prim_api
@@ -229,22 +239,24 @@
   
   - platform: template
     sensors:
-      zonnestand:
-        friendly_name: "Zonnestand"
-        unit_of_measurement: 'graden'
-        value_template: >
-          {{ state_attr('sun.sun', 'elevation') | float }}
-      zon_azimuth:
-        friendly_name: "Zon Azimuth"
-        unit_of_measurement: 'graden'
-        value_template: >
-          {{ state_attr('sun.sun', 'azimuth') | float }}
       treintijdvolgende:
         friendly_name: "Volgende Trein Hoofddorp"
         value_template: >
           {{ state_attr('sensor.hoofddorp_leiden', 'next') }}
       verbruikelectra:
         friendly_name: "Huidige electriciteit verbruik"
-        unit_of_measurement: 'W'
+        unit_of_measurement: W
         value_template: >
           {{ (( states('sensor.power_consumption') | float) * 1000 | round(0)) }}
+      majorupdateavailable:
+        friendly_name: "Major update beschibaar"
+        value_template: >
+          {{ states.binary_sensor.updater.attributes.newest_version.split(".")[2] | float == 0 }}
+      gemiddelde_temperature_boven:
+        value_template: >
+          {% set T1 = states.climate.aiden.attributes['current_temperature'] | float %}
+          {% set T2 = states.climate.ella.attributes['current_temperature'] %}
+          {% set T3 = states.climate.ouder_sk.attributes['current_temperature'] %}
+          {% set T4 = states.climate.overloop.attributes['current_temperature'] %}
+          {{ (( T1 + T2 + T3 + T4 )/4 ) | round(1) }}
+        unit_of_measurement: C

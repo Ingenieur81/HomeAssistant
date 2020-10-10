@@ -1,0 +1,58 @@
+    #
+    # Verlichting view
+    #
+    title: Verlichting
+    icon: mdi:lightbulb-on-outline
+    panel: false
+    path: Verlichting
+    cards:
+      #- entities:
+      #    - entity: group.woonkamer
+      #    - entity: group.buitenverlichting
+      #    - entity: group.tuinverlichting
+      #    - entity: group.hal
+      #  show_header_toggle: true
+      #  title: Alle verlichting
+      #  type: entities
+      - entities:
+          - entity: switch.fibaro_system_fgs213_switch_switch_2
+          - entity: switch.fibaro_system_fgs213_switch_switch_4
+          - entity: switch.aeon_labs_zw116_nano_switch_switch
+        show_header_toggle: true
+        title: Buitenverlichting
+        type: entities
+      #- entities:
+          #- type: custom:slider-entity-row
+          #  entity: light.bijkamer
+          #  hide_when_off: true
+          #  toggle: true
+        #show_header_toggle: true
+        #title: Woonkamer verlichting
+      - type: light
+        entity: light.vitrinekast
+        name: Woonkamer achter
+      - type: light
+        entity: light.woonkamer_midden
+        name: Woonkamer midden
+      - entities:
+          - entity: switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+        title: Vitrinekast
+        type: entities
+      - type: light
+        entity: light.keuken
+        name: Keuken      
+      - type: light
+        entity: light.woonkamer_voor_boven
+        name: Keuken boven
+      - type: light
+        entity: light.woonkamer_voor_midden
+        name: Keuken midden
+      - type: light
+        entity: light.woonkamer_voor_onder
+        name: Keuken onder
+      - type: light
+        entity: light.bijkamer
+        name: Bijkamer
+      #- type: light
+      #  entity: light.hal_plafond
+      #  name: Hal

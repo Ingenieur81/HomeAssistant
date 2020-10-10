@@ -63,7 +63,7 @@
     - light.woonkamer_voor_midden
     - light.woonkamer_voor_onder
     - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch # vitrinekast
-    - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2 # plant met lamp
+    - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_3 # plant met lamp
     #- switch.VitrineKast
   keuken:
     - light.color_temperature_light_1
@@ -76,12 +76,6 @@
     - group.tuinverlichting
     - group.woonkamer
     - group.hal
-  televisie_activiteit:
-    - switch.gaming_ps4_harmony_activity
-    - switch.media_center_harmony_activity 
-    - switch.muziek_harmony_activity 
-    - switch.netflix_kijken_harmony_activity 
-    - switch.tv_kijken_harmony_activity 
   alle_screens:
     - cover.grote_raam
     - cover.keukenraam

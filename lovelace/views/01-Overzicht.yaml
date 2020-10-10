@@ -1,0 +1,1242 @@
+#
+# Home view
+#
+    title: Overzicht
+    panel: true
+    path: Overzicht
+    icon: mdi:home-assistant
+    cards:
+      - type: custom:layout-card
+        layout: vertical
+        column_num: 4
+        column_width: 25%
+        cards:
+          #- type: horizontal-stack
+          #  cards:
+#
+# Eerste kolom
+#
+          # Update begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              # shadow top
+              # - type: 'custom:button-card'
+              #   show_icon: false
+              #   show_name: false
+              #   style: |
+              #     ha-card {
+              #       --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+              #       box-shadow: 2px 2px rgba(0,0,0,0.0);
+              #     }
+              #   styles:
+              #     card:
+              #       - width: 5px
+              #       - height: 5px
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: entities
+                  entities:
+                  - entity: sensor.installed_version
+                    name: Huidige Version
+                    icon: mdi:home-assistant
+                  # - entity: sensor.majorupdateavailable
+                  #   name: Update beschikbaar
+                  #   icon: mdi:package-up
+                  - entity: sensor.ssl_certificate_expiry
+                    name: Vervaldatum certificaat
+                    icon: mdi:certificate
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Update eind
+          # Begin camera voordeur
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: picture-entity
+                  entity: camera.front_door_2
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Eind camera voordeur
+          # Verlichting
+          - type: vertical-stack
+            cards:
+            - type: markdown
+              content: |
+                # Verlichting
+              style: |
+                ha-card {
+                  height: 50px;
+                  border-radius: 15px;
+                  --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                  box-shadow: 2px 2px rgba(0,0,0,0.0);
+                }
+                h1 {
+                  font-size: 30px;
+                  font-weight: bold;
+                  font-family: Helvetica;
+                  letter-spacing: '-0.01em';
+                }
+            - type: horizontal-stack
+              cards:
+              # First button Start
+              # - type: horizontal-stack
+              #   cards:
+              - type: custom:button-card
+                entity: group.woonkamer
+                icon: mdi:sofa
+                show_icon: true
+                show_name: false
+                state:
+                - styles:
+                    icon:
+                      - color: 'var(--paper-item-icon-active-color)'
+                  value: 'on'
+                  # You also have to change the entity_ids in the following template
+                style: |
+                  ha-card {
+                    box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') and is_state('group.woonkamer', 'on') %}
+                        inset -4px -4px 8px 0 rgba(255,255,255,.7), inset 4px 4px 8px 0 rgba(0,0,0,.07);
+                      {% elif is_state('sun.sun', 'above_horizon') and is_state('group.woonkamer', 'off') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.woonkamer', 'on') %}
+                        inset -4px -4px 12px 0 rgba(77, 77, 77,.5), inset 4px 4px 12px 0 rgba(0,0,0,.7); 
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.woonkamer', 'off') %}
+                        -8px -8px 8px 0 rgba(77, 77, 77,.5),8px 8px 8px 0 rgba(0,0,0,.3);
+                      {% endif %}
+                  }
+                styles:
+                  card:
+                    - width: 100px
+                    - height: 100px
+                    - border-radius: 15px
+                    - background-color: var(--primary-background-color)
+                  icon:
+                    - color: var(--primary-text-color)
+                tap_action:
+                  action: toggle
+                # - type: custom:button-card
+                #   show_icon: false
+                #   name: test
+                #   show_name: true
+                #   style: |
+                #     ha-card {
+                #       --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                #       box-shadow: 2px 2px rgba(0,0,0,0.0);
+                #     }
+                #   styles:
+                #     card:
+                #       - width: 5px
+                #       - height: 10px
+                # - type: horizontal-stack
+                #   cards:
+                #     - type: custom:button-card
+                #       show_icon: false
+                #       name: test
+                #       show_name: true
+                #       style: |
+                #         ha-card {
+                #           --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                #           box-shadow: 2px 2px rgba(0,0,0,0.0);
+                #         }
+                #       styles:
+                #         card:
+                #           - width: 5px
+                #           - height: 10px
+              # First button eind
+              # Second button Start
+              - type: custom:button-card
+                entity: group.keuken
+                icon: mdi:silverware-variant
+                show_icon: true
+                show_name: false
+                state:
+                - styles:
+                    icon:
+                      - color: 'var(--paper-item-icon-active-color)'
+                  value: 'on'
+                  # You also have to change the entity_ids in the following template
+                style: |
+                  ha-card {
+                    box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') and is_state('group.keuken', 'on') %}
+                        inset -4px -4px 8px 0 rgba(255,255,255,.7), inset 4px 4px 8px 0 rgba(0,0,0,.07);
+                      {% elif is_state('sun.sun', 'above_horizon') and is_state('group.keuken', 'off') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.keuken', 'on') %}
+                        inset -4px -4px 12px 0 rgba(77, 77, 77,.5), inset 4px 4px 12px 0 rgba(0,0,0,.7); 
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.keuken', 'off') %}
+                        -8px -8px 8px 0 rgba(77, 77, 77,.5),8px 8px 8px 0 rgba(0,0,0,.3);
+                      {% endif %}
+                  }
+                styles:
+                  card:
+                    - width: 100px
+                    - height: 100px
+                    - border-radius: 15px
+                    - background-color: var(--primary-background-color)
+                  icon:
+                    - color: var(--primary-text-color)
+                tap_action:
+                  action: toggle
+              # Second button eind
+            - type: horizontal-stack
+              cards:
+              # Third button Start
+              - type: custom:button-card
+                entity: group.buitenverlichting
+                icon: mdi:home
+                show_icon: true
+                show_name: false
+                state:
+                - styles:
+                    icon:
+                      - color: 'var(--paper-item-icon-active-color)'
+                  value: 'on'
+                  # You also have to change the entity_ids in the following template
+                style: |
+                  ha-card {
+                    box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') and is_state('group.buitenverlichting', 'on') %}
+                        inset -4px -4px 8px 0 rgba(255,255,255,.7), inset 4px 4px 8px 0 rgba(0,0,0,.07);
+                      {% elif is_state('sun.sun', 'above_horizon') and is_state('group.buitenverlichting', 'off') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.buitenverlichting', 'on') %}
+                        inset -4px -4px 12px 0 rgba(77, 77, 77,.5), inset 4px 4px 12px 0 rgba(0,0,0,.7); 
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.buitenverlichting', 'off') %}
+                        -8px -8px 8px 0 rgba(77, 77, 77,.5),8px 8px 8px 0 rgba(0,0,0,.3);
+                      {% endif %}
+                  }
+                styles:
+                  card:
+                    - width: 100px
+                    - height: 100px
+                    - border-radius: 15px
+                    - background-color: var(--primary-background-color)
+                  icon:
+                    - color: var(--primary-text-color)
+                tap_action:
+                  action: toggle
+              # Third button eind
+              # Fourth button Start
+              - type: custom:button-card
+                entity: group.tuinverlichting
+                icon: mdi:flower
+                show_icon: true
+                show_name: false
+                state:
+                - styles:
+                    icon:
+                      - color: 'var(--paper-item-icon-active-color)'
+                  value: 'on'
+                  # You also have to change the entity_ids in the following template
+                style: |
+                  ha-card {
+                    box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') and is_state('group.tuinverlichting', 'on') %}
+                        inset -4px -4px 8px 0 rgba(255,255,255,.7), inset 4px 4px 8px 0 rgba(0,0,0,.07);
+                      {% elif is_state('sun.sun', 'above_horizon') and is_state('group.tuinverlichting', 'off') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.tuinverlichting', 'on') %}
+                        inset -4px -4px 12px 0 rgba(77, 77, 77,.5), inset 4px 4px 12px 0 rgba(0,0,0,.7); 
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('group.tuinverlichting', 'off') %}
+                        -8px -8px 8px 0 rgba(77, 77, 77,.5),8px 8px 8px 0 rgba(0,0,0,.3);
+                      {% endif %}
+                  }
+                styles:
+                  card:
+                    - width: 100px
+                    - height: 100px
+                    - border-radius: 15px
+                    - background-color: var(--primary-background-color)
+                  icon:
+                    - color: var(--primary-text-color)
+                tap_action:
+                  action: toggle
+              # Fourth button eind
+            - type: horizontal-stack
+              cards:
+              # Fifth button Start
+              - type: custom:button-card
+                entity: switch.waterpomp
+                icon: mdi:sprinkler-variant
+                show_icon: true
+                show_name: false
+                state:
+                - styles:
+                    icon:
+                      - color: 'var(--paper-item-icon-active-color)'
+                  value: 'on'
+                  # You also have to change the entity_ids in the following template
+                style: |
+                  ha-card {
+                    box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') and is_state('switch.waterpomp', 'on') %}
+                        inset -4px -4px 8px 0 rgba(255,255,255,.7), inset 4px 4px 8px 0 rgba(0,0,0,.07);
+                      {% elif is_state('sun.sun', 'above_horizon') and is_state('switch.waterpomp', 'off') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('switch.waterpomp', 'on') %}
+                        inset -4px -4px 12px 0 rgba(77, 77, 77,.5), inset 4px 4px 12px 0 rgba(0,0,0,.7); 
+                      {% elif is_state('sun.sun', 'below_horizon') and is_state('switch.waterpomp', 'off') %}
+                        -8px -8px 8px 0 rgba(77, 77, 77,.5),8px 8px 8px 0 rgba(0,0,0,.3);
+                      {% endif %}
+                  }
+                styles:
+                  card:
+                    - width: 100px
+                    - height: 100px
+                    - border-radius: 15px
+                    - background-color: var(--primary-background-color)
+                  icon:
+                    - color: var(--primary-text-color)
+                tap_action:
+                  action: toggle
+              # Fifth button eind
+              # Regen begin
+              - type: horizontal-stack
+                cards:
+                # Actual card begin
+                - type: glance
+                  entities:
+                  - entity: sensor.total_rain_last_2_days
+                    name: 'Gevallen'
+                    icon: mdi:weather-rainy
+                  - entity: sensor.total_rain_coming_2_days
+                    name: 'Voorspeld'
+                    icon: mdi:weather-rainy
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      font-size: 10px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Eind regen
+#
+# Tweede kolom
+#
+          - break
+          # # Begin NS
+          # - type: vertical-stack
+          #   cards:
+          #   - type: vertical-stack
+          #     cards:
+          #     # shadow top
+          #     - type: 'custom:button-card'
+          #       show_icon: false
+          #       show_name: false
+          #       style: |
+          #         ha-card {
+          #           --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+          #           box-shadow: 2px 2px rgba(0,0,0,0.0);
+          #         }
+          #       styles:
+          #         card:
+          #           - width: 5px
+          #           - height: 5px
+          #     - type: horizontal-stack
+          #       cards:
+          #       # shadow left
+          #       - type: 'custom:button-card'
+          #         show_icon: false
+          #         show_name: false
+          #         style: |
+          #           ha-card {
+          #             --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+          #             box-shadow: 2px 2px rgba(0,0,0,0.0);
+          #           }
+          #         styles:
+          #           card:
+          #             - width: 5px
+          #             - height: 5px
+          #       # Actual card begin
+          #       - type: glance
+          #         entities:
+          #         - entity: sensor.hoofddorp_leiden
+          #           name: Nu
+          #           icon: mdi:train
+          #         - entity: sensor.treintijdvolgende
+          #           name: Straks
+          #           icon: mdi:train
+          #       # Actual card eind
+          #         style: |
+          #           ha-card {
+          #             font-size: 30px;
+          #             background-color: var(--primary-background-color);
+          #             border-radius: 15px;
+          #             box-shadow: 
+          #             {% if is_state('sun.sun', 'above_horizon') %}
+          #               -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+          #             {% else %}
+          #               -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+          #             {% endif %}
+          #           }  
+          #         styles:
+          #           card:
+          #             #- width: 60px
+          #             #- height: 60px
+          #             - border-radius: 15px
+          #             - background-color: var(--primary-background-color)
+          #       # shadow bottom
+          #       - type: 'custom:button-card'
+          #         show_icon: false
+          #         show_name: false
+          #         style: |
+          #           ha-card {
+          #             --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+          #             box-shadow: 2px 2px rgba(0,0,0,0.0);
+          #           }
+          #         styles:
+          #           card:
+          #             - width: 5px
+          #             - height: 5px
+          # eind NS
+          # Temperatuur begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: glance
+                  entities:
+                  - entity: sensor.br_feel_temperature
+                    name: 'Nu'
+                  - entity: sensor.br_temperature_1d
+                    name: 'Morgen'
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      font-size: 30px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Temperatuur eind
+          # Weer begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: glance
+                  entities:
+                  - entity: sensor.br_full_condition
+                    name: 'Condities'
+                  - entity: sensor.br_rain_1d
+                    name: 'Regen'
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      font-size: 20px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Weer eind
+          # Airconditioners begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: entities
+                  title: Airconditioners
+                  show_header_toggle: false
+                  entities:
+                  - entity: climate.overloop
+                    icon: mdi:air-conditioner
+                  - entity: climate.zolder
+                    icon: mdi:air-conditioner
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Airconditioners end
+          # Begin nutsverbruik
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: custom:dual-gauge-card
+                  title: Verbruik
+                  min: 0
+                  max: 7000
+                  outer:
+                    entity: sensor.verbruikelectra
+                    label: "Current"
+                    unit: "W"
+                  inner:
+                    entity: sensor.statistics_on_power_consumption
+                    label: "Mean"
+                    unit: "W"
+                  colors:
+                    - color: "var(--label-badge-red)"
+                      value: 4000
+                    - color: "var(--label-badge-orange"
+                      value: 2500
+                    - color: "var(--label-badge-yellow)"
+                      value: 1000
+                    - color: "var(--label-badge-green)"
+                      value: 0
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      font-size: 20px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Eind nutsverbruik
+#
+# Derde kolom
+#
+          - break
+          # Maintenance mode begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: entities
+                  title: Modi
+                  show_header_toggle: false
+                  entities:
+                  - entity: input_boolean.maintenance_mode
+                    icon: mdi:wrench
+                  - entity: input_boolean.vakantie_mode
+                    icon: mdi:beach
+                  - entity: input_boolean.waterpomp_buiten
+                    icon: mdi:sprinkler-variant
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Maintenance mode end
+          # Kalender Gertjan begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: custom:atomic-calendar
+                  title: Kalender Gertjan
+                  defaultMode: 1
+                  entities:
+                  - entity: calendar.gedeeld_gertjan
+                  fullDayEventText: 'Hele dag'
+                  untilText: 'Tot'
+                  showColors: true
+                  maxDaysToShow: 5
+                  showLocation: true
+                  showMonth: true
+                  showCurrentEventLine: false
+                  dateSize: 90
+                  timeSize: 90
+                  titleSize: 100
+                  locationIconColor: 'rgb(230, 124, 115)'
+                  locationTextSize: 90
+                  dimFinishedEvents: true
+                  finishedEventOpacity: 0.6
+                  finishedEventFilter: 'grayscale(100%)'
+                  showProgressBar: true
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Kalender Gertjan eind
+          #- break
+          # Kalender Lisette begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: custom:atomic-calendar
+                  title: Kalender Lisette
+                  defaultMode: 1
+                  entities:
+                  - entity: calendar.gedeeld_lisette
+                  fullDayEventText: 'Hele dag'
+                  untilText: 'Tot'
+                  showColors: true
+                  maxDaysToShow: 5
+                  showLocation: true
+                  showMonth: true
+                  showCurrentEventLine: false
+                  dateSize: 90
+                  timeSize: 90
+                  titleSize: 100
+                  locationIconColor: 'rgb(230, 124, 115)'
+                  locationTextSize: 90
+                  dimFinishedEvents: true
+                  finishedEventOpacity: 0.6
+                  finishedEventFilter: 'grayscale(100%)'
+                  showProgressBar: true
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Kalender Lisette eind
+#
+# Vierde kolom
+#
+          - break
+          # Zonneschermen begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: entities
+                  title: Zonneschermen
+                  show_header_toggle: false
+                  entities:
+                  - entity:  cover.grote_raam
+                    name: "Groot"
+                  - entity:  cover.keukenraam
+                    name: "Keuken"
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      #font-size: 30px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Zonneschermen eind
+          # Lichtniveau begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: entities
+                  entities:
+                  - entity: sensor.gemiddeld_lichtniveau
+                    name: Gemiddeld
+                    icon: mdi:theme-light-dark
+                  - entity: sensor.hue_outdoor_motion_sensor_1_light_level
+                    name: Buiten
+                    icon: mdi:theme-light-dark
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      font-size: 18px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Eind lichtniveau
+          # Update onderhoudstaken begin
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin
+                - type: entities
+                  title: Werk Taak Bij
+                  show_header_toggle: false
+                  entities:
+                    - input_select.onderhoudstaken
+                    - script.zet_datum_onderhouds_taken
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      font-size: 20px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Update onderhoudstaken eind
+          # Begin onderhoudstaken
+          - type: vertical-stack
+            cards:
+            - type: vertical-stack
+              cards:
+              - type: horizontal-stack
+                cards:
+                # shadow left
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+                # Actual card begin 
+                - type: entity-filter
+                  state_filter:
+                  - operator: "<"
+                    value: 5
+                  card:
+                    title: "Onderhouds taken"
+                  entities:
+                    - entity: sensor.dagen_sinds_plant_lamp_water_geven
+                      icon: mdi:flower
+                    - entity: sensor.dagen_sinds_planten_water_geven
+                      icon: mdi:flower
+                    - entity: sensor.dagen_sinds_quooker_onderhoud
+                      icon: mdi:water-pump
+                    - entity: sensor.dagen_sinds_quooker_zwart_pijpje
+                      icon: mdi:water-pump
+                    - entity: sensor.dagen_sinds_autobanden_draaien
+                      icon: mdi:car-tire-alert
+                    - entity: sensor.dagen_sinds_airco_filter
+                      icon: mdi:air-conditioner
+                # Actual card eind
+                  style: |
+                    ha-card {
+                      font-size: 18px;
+                      background-color: var(--primary-background-color);
+                      border-radius: 15px;
+                      box-shadow: 
+                      {% if is_state('sun.sun', 'above_horizon') %}
+                        -8px -8px 8px 0 rgba(255,255,255,.5),8px 8px 8px 0 rgba(0,0,0,.03);
+                      {% else %}
+                        -8px -8px 8px 0 rgba(50, 50, 50,.5),8px 8px 8px 0 rgba(0,0,0,.15);
+                      {% endif %}
+                    }  
+                  styles:
+                    card:
+                      #- width: 60px
+                      #- height: 60px
+                      - border-radius: 15px
+                      - background-color: var(--primary-background-color)
+                # shadow bottom
+                - type: 'custom:button-card'
+                  show_icon: false
+                  show_name: false
+                  style: |
+                    ha-card {
+                      --paper-card-background-color: 'rgba(11, 11, 11, 0.00)';
+                      box-shadow: 2px 2px rgba(0,0,0,0.0);
+                    }
+                  styles:
+                    card:
+                      - width: 5px
+                      - height: 5px
+          # Eind onderhoudstaken

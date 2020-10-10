@@ -1,0 +1,202 @@
+homeassistant:
+  #customize:
+
+automation:
+  # Screens
+  # Naar beneden, buiten koud en familie thuis
+  - alias: '[Screens] - Screens naar beneden bij koud weer'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+        above: 32000
+        for:
+          minutes: 3
+      - platform: state
+        entity_id: group.familie
+        from: "not_home"
+        to: "home"
+        for:
+          minutes: 3
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.maintenance_mode
+          state: 'off'
+        - condition: state
+          entity_id: group.familie
+          state: home
+        - condition: numeric_state
+          entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+          above: 31000
+        - condition: numeric_state
+          entity_id: sensor.zon_azimuth
+          above: 170
+        - condition: numeric_state
+          entity_id: sensor.zon_azimuth
+          below: 260
+        - condition: numeric_state
+          entity_id: sensor.br_temperature
+          below: 18
+        - condition: numeric_state
+          entity_id: sensor.br_temperature
+          above: 12
+        - condition: numeric_state
+          entity_id:  sensor.br_wind_force
+          below: 7
+        #- condition: template
+        #  value_template: >
+        #    {{ states('sensor.br_condition') in ['clear', 'partlycloudy'] }}
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: >
+              {{ (state_attr('cover.grote_raam', 'current_position') | int) == 100 }}
+          - condition: template
+            value_template: >
+              {{ (state_attr('cover.keukenraam', 'current_position') | int) == 100 }}
+    action:
+      - service: cover.set_cover_position
+        entity_id: 
+          - cover.grote_raam
+          - cover.keukenraam
+        data_template:
+          position: 40
+  # Naar beneden, buiten warm
+  - alias: '[Screens] - Screens naar beneden bij warm weer'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+        above: 19000
+        for:
+          minutes: 3
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.maintenance_mode
+          state: 'off'
+        - condition: numeric_state
+          entity_id: sensor.br_temperature
+          above: 18
+        - condition: numeric_state
+          entity_id: sensor.br_wind_force
+          below: 7
+        - condition: numeric_state
+          entity_id: sensor.zon_azimuth
+          below: 260
+        #- condition: template
+        #  value_template: >
+        #    {{ states('sensor.br_condition') in ['clear', 'partlycloudy'] }}
+        - condition: or
+          conditions:
+          - condition: template
+            value_template: >
+              {{ (state_attr('cover.grote_raam', 'current_position') | int) == 100 }}
+          - condition: template
+            value_template: >
+              {{ (state_attr('cover.keukenraam', 'current_position') | int) == 100 }}
+    action:
+      - service: cover.close_cover
+        entity_id: 
+          - cover.grote_raam
+          - cover.keukenraam
+  # Helemaal naar boven
+  # Bij minder lichtniveau, alleen als de buitentemperatuur niet hoger is dan de binnentemperatuur
+  - alias: '[Screens] - Screens naar boven door lichtniveau'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+        below: 20000
+        for:
+          minutes: 5
+    condition:
+      - condition: template
+        value_template: >
+          {{ states.sensor.br_temperature.state | float < states.climate.keuken.attributes['current_temperature'] | float }}
+      - condition: or
+        conditions:
+        - condition: template
+          value_template: >
+            {{ (state_attr('cover.grote_raam', 'current_position') | int) != 100 }}
+        - condition: template
+          value_template: >
+            {{ (state_attr('cover.keukenraam', 'current_position') | int) != 100 }}
+    action:
+      - service: cover.open_cover
+        entity_id: 
+          - cover.grote_raam
+          - cover.keukenraam
+  # Bij harde wind, ondergaande zon of heel laag lichtniveau
+  - alias: '[Screens] - Screens naar boven, harde wind of ondergaande zon'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.br_wind_force
+        above: 7
+      - platform: numeric_state
+        entity_id: sensor.zon_azimuth
+        above: 285
+      - platform: numeric_state
+        entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+        below: 8000
+        for:
+          minutes: 5
+    condition:
+      - condition: or
+        conditions:
+        - condition: template
+          value_template: >
+            {{ (state_attr('cover.grote_raam', 'current_position') | int) != 100 }}
+        - condition: template
+          value_template: >
+            {{ (state_attr('cover.keukenraam', 'current_position') | int) != 100 }}
+    action:
+      - service: cover.open_cover
+        entity_id: 
+          - cover.grote_raam
+          - cover.keukenraam
+  # Keuken raam half naar boven in de avond
+  # Todo: schakelen met kookplaat
+  - alias: '[Screens] - Screens half naar boven'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.zon_azimuth
+        above: 260
+      - platform: numeric_state
+        entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+        above: 28000
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.zon_azimuth
+        above: 260
+      - condition: numeric_state
+        entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+        above: 28000
+      - condition: or
+        conditions:
+          - condition: template
+            value_template: >
+              {{ (state_attr('cover.grote_raam', 'current_position') | int) != 100 }}
+          - condition: template
+            value_template: >
+              {{ (state_attr('cover.keukenraam', 'current_position') | int) != 100 }}
+    action:
+      - service: cover.set_cover_position
+        entity_id:
+          - cover.keukenraam
+        data_template:
+          position: 40
+
+sensor:
+  - platform: template
+    sensors:
+      zonnestand:
+        friendly_name: "Zonnestand"
+        unit_of_measurement: 'graden'
+        value_template: >
+          {{ state_attr('sun.sun', 'elevation') | float }}
+      zon_azimuth:
+        friendly_name: "Zon Azimuth"
+        unit_of_measurement: 'graden'
+        value_template: >
+          {{ state_attr('sun.sun', 'azimuth') | float }}

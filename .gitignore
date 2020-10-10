@@ -5,6 +5,14 @@
 !*.yaml
 !.gitignore
 !*.md
+!packages/
+!themes/
+!lovelace/
+!lovelace/resources/
+!lovelace/views/
+
+# don't ignore keep files, to create emtpy directories
+!.keep
 
 # Ignore folders.
 .storage

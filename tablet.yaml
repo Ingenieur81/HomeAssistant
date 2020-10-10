@@ -1,6 +1,6 @@
 title: Thuis
 # Include external resources
-resources: !include /config/lovelace/resources/resources.yaml
+#resources: !include /config/lovelace/resources/resources.yaml
 # custom-header
 custom_header:
   background: var(--primary-background-color);

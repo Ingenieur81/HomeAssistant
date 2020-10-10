@@ -1,0 +1,80 @@
+    #
+    # Calendar view
+    #
+    title: Kalender
+    icon: mdi:calendar
+    panel: false
+    path: Kalender
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:atomic-calendar
+            title: Kalender Gertjan
+            defaultMode: 1
+            entities:
+            - entity: calendar.gedeeld_gertjan
+            fullDayEventText: 'Hele dag'
+            untilText: 'Tot'
+            showColors: true
+            maxDaysToShow: 14
+            showLocation: true
+            showMonth: true
+            showCurrentEventLine: false
+            #dateColor: black
+            dateSize: 90
+            #timeColor: blue
+            timeSize: 90
+            #titleColor: black
+            titleSize: 100
+            locationIconColor: 'rgb(230, 124, 115)'
+            #locationLinkColor: black
+            locationTextSize: 90
+            dimFinishedEvents: true
+            finishedEventOpacity: 0.6
+            finishedEventFilter: 'grayscale(100%)'
+            #dayWrapperLineColor: black
+            #eventBarColor: blue
+            showProgressBar: true
+            #progressBarColor: blue
+          - type: custom:atomic-calendar
+            title: Kalender Lisette
+            defaultMode: 1
+            entities:
+            - entity: calendar.gedeeld_lisette
+            fullDayEventText: 'Hele dag'
+            untilText: 'Tot'
+            showColors: true
+            maxDaysToShow: 14
+            showLocation: true
+            showMonth: false
+            showCurrentEventLine: false
+            dateSize: 90
+            timeSize: 90
+            titleSize: 100
+            locationIconColor: 'rgb(230, 124, 115)'
+            locationTextSize: 90
+            dimFinishedEvents: true
+            finishedEventOpacity: 0.6
+            finishedEventFilter: 'grayscale(100%)'
+            showProgressBar: true
+          - type: custom:atomic-calendar
+            title: Vakanties in NL
+            defaultMode: 1
+            entities:
+            - entity: calendar.holidays_in_netherlands
+            fullDayEventText: 'Hele dag'
+            untilText: 'Tot'
+            showColors: true
+            maxDaysToShow: 14
+            showLocation: true
+            showMonth: true
+            showCurrentEventLine: false
+            dateSize: 90
+            timeSize: 90
+            titleSize: 100
+            locationIconColor: 'rgb(230, 124, 115)'
+            locationTextSize: 90
+            dimFinishedEvents: true
+            finishedEventOpacity: 0.6
+            finishedEventFilter: 'grayscale(100%)'
+            showProgressBar: true

@@ -1,0 +1,207 @@
+homeassistant:
+  #customize:
+
+# Bij toevoegen nieuwe taak, de sensor ook toevoegen aan de lovelace interface
+
+automation:
+  # Onderhoudstaken
+  # Trigger when task comes below certain value
+  - alias: '[Tasks] - Household task overdue'
+    trigger:
+      - platform: numeric_state
+        entity_id:
+          - sensor.dagen_sinds_plant_lamp_water_geven
+          - sensor.dagen_sinds_planten_water_geven
+          - sensor.dagen_sinds_quooker_onderhoud
+          - sensor.dagen_sinds_quooker_zwart_pijpje
+          - sensor.dagen_sinds_autobanden_draaien
+          - sensor.dagen_sinds_airco_filter
+        below: 1
+    condition:
+      # This prevents triggering after every HA restart
+      - condition: state
+        entity_id: input_boolean.maintenance_mode
+        state: 'off'
+      # Prevents multiple notify messages
+      - condition: state
+        entity_id: input_boolean.task_notify
+        state: 'off'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.task_notify
+
+  # Send the notification
+  - alias: '[Tasks] - Send household tasks reminder'
+    trigger:
+      - platform: state
+        entity_id: input_boolean.task_notify
+        to: 'on'
+      - platform: state
+        entity_id: group.gertjan
+        to: home
+    condition:
+      condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.task_notify
+          state: 'on'
+        - condition: state
+          entity_id: group.gertjan
+          state: home
+    action:
+      - service: notify.hass_notification
+        data_template:
+          title: 'Huishoudelijke taak herinnering!'
+          message: >
+            {% if (states('sensor.dagen_sinds_plant_lamp_water_geven') | int) < 1 %} De plant met lamp moet water. De laatste keer was {{ (( as_timestamp(now()) - state_attr('input_datetime.plant_lamp','timestamp')) | int / 604800) | round(0) }} weken geleden. 
+            {% endif %}
+            {% if (states('sensor.dagen_sinds_planten_water_geven') | int) < 1 %} De planten moeten water. De laatste keer was {{ (( as_timestamp(now()) - state_attr('input_datetime.planten','timestamp')) | int / 86400) | round(0) }} dagen geleden. 
+            {% endif %}
+            {% if (states('sensor.dagen_sinds_quooker_onderhoud') | int) < 1 %} De Quooker moet groot onderhoud. De laatste keer was {{ (( as_timestamp(now()) - state_attr('input_datetime.quooker_algemeen','timestamp')) | int / 31556926) | round(1) }} jaar geleden. 
+            {% endif %}
+            {% if (states('sensor.dagen_sinds_quooker_zwart_pijpje') | int) < 1 %} Het zwarte pijpje van de Quooker moet doorgespoeld worden. De laatste keer was {{ (( as_timestamp(now()) - state_attr('input_datetime.quooker_pijpje','timestamp')) | int / 2629743) | round(0) }} maanden geleden. 
+            {% endif %}
+            {% if (states('sensor.dagen_sinds_autobanden_draaien') | int) < 1 %} De autobanden moeten gedraaid worden. De laatste keer was {{ (( as_timestamp(now()) - state_attr('input_datetime.autobanden','timestamp')) | int / 2629743) | round(0) }} maanden geleden.
+            {% endif %}
+            {% if (states('sensor.dagen_sinds_airco_filter') | int) < 1 %} De filters van de airco's moeten worden schoongemaakt. De laatste keer was {{ (( as_timestamp(now()) - state_attr('input_datetime.airco_filters','timestamp')) | int / 2629743) | round(0) }} maanden geleden.
+            {% endif %}
+          target: device/GertjanOP3T
+      - delay:
+          seconds: 2
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.task_notify
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.task_alert
+
+input_boolean:
+  task_notify:
+    name: Taken notificatie
+    icon: mdi:checkbox-multiple-marked-outline
+  task_alert:
+    name: Taken herinnering
+    icon: mdi:reminder
+
+input_datetime:
+  # Onderhoudslijst
+  plant_lamp:
+    name: Plant met lamp watergeven
+    has_date: true
+  planten:
+    name: Planten watergeven
+    has_date: true
+  quooker_algemeen:
+    name: Quooker algemeen
+    has_date: true
+  quooker_pijpje:
+    name: Quooker zwarte pijpje
+    has_date: true
+  autobanden:
+    name: Autobanden
+    has_date: true
+  airco_filters:
+    name: Airconditioner filters
+    has_date: true
+
+input_select:
+  onderhoudstaken:
+    name: Selecteer Taak
+    options:
+    - Plant met lamp watergeven
+    - Planten watergeven
+    - Quooker algemeen onderhoud
+    - Quooker zwarte pijpje
+    - Autobanden draaien
+    - Airco filters schoonmaken
+
+script:
+  zet_datum_onderhouds_taken:
+    alias: 'Reset taak'
+    sequence:
+      - service: input_datetime.set_datetime
+        data_template:
+          entity_id: >
+            {% if is_state ("input_select.onderhoudstaken", "Plant met lamp watergeven") %} input_datetime.plant_lamp
+            {% elif is_state ("input_select.onderhoudstaken", "Planten watergeven") %} input_datetime.planten
+            {% elif is_state ("input_select.onderhoudstaken", "Quooker algemeen onderhoud") %} input_datetime.quooker_algemeen
+            {% elif is_state ("input_select.onderhoudstaken", "Quooker zwarte pijpje") %} input_datetime.quooker_pijpje
+            {% elif is_state ("input_select.onderhoudstaken", "Autobanden draaien") %} input_datetime.autobanden
+            {% elif is_state ("input_select.onderhoudstaken", "Airco filters schoonmaken") %} input_datetime.airco_filters
+            {% endif %}
+          date: '{{ now().strftime("%Y-%m-%d") }}'
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.task_alert
+
+sensor:
+  - platform: template
+    sensors:
+      # Onderhoudslijst
+      # Deze sensoren houden bij wanneer de taken voor het laatst zijn uitgevoerd in dagen
+      dagen_sinds_plant_lamp_water_geven:
+        friendly_name: Plant met lamp watergeven over
+        entity_id: sensor.time
+        unit_of_measurement: 'dagen'
+        # Plant met lamp, interval 1 keer per 4 weken --> 28 dagen --> 2419200 seconden
+        value_template: >
+          {{ ((( state_attr('input_datetime.plant_lamp','timestamp') + 2419200 ) - as_timestamp(now())) | int / 86400) | round(0) }}
+      dagen_sinds_planten_water_geven:
+        friendly_name: Planten watergeven over
+        entity_id: sensor.time
+        unit_of_measurement: 'dagen'
+        # Planten algemeen, interval 1 keer per 4 dagen + 1 dag anders klopt het niet --> 432000 seconden
+        value_template: >
+          {{ ((( state_attr('input_datetime.planten','timestamp') + 432000 ) - as_timestamp(now())) | int / 86400) | round(0) }}
+      dagen_sinds_quooker_onderhoud:
+        friendly_name: Algemeen Quooker onderhoud over
+        entity_id: sensor.time
+        unit_of_measurement: 'dagen'
+        # Quooker algemeen, interval 1 keer per 5,5 jaar--> 173563093 seconden
+        value_template: >
+          {{ ((( state_attr('input_datetime.quooker_algemeen','timestamp') + 173563093 ) - as_timestamp(now())) | int / 86400) | round(0) }}
+      dagen_sinds_quooker_zwart_pijpje:
+        friendly_name: Quooker zwarte pijpje onderhoud over
+        entity_id: sensor.time
+        unit_of_measurement: 'dagen'
+        # Quooker zwarte pijpje, interval 1 keer per 6 maanden --> 15778463 seconden
+        value_template: >
+          {{ ((( state_attr('input_datetime.quooker_pijpje','timestamp') + 15778463 ) - as_timestamp(now())) | int / 86400) | round(0) }}
+      dagen_sinds_autobanden_draaien:
+        friendly_name: Autobanden draaien over
+        entity_id: sensor.time
+        unit_of_measurement: 'dagen'
+        # Autobanden draaien, interval 1 keer per 3 maanden --> 7889231 seconden
+        value_template: >
+          {{ ((( state_attr('input_datetime.autobanden','timestamp') + 7889231 ) - as_timestamp(now())) | int / 86400) | round(0) }}
+      dagen_sinds_airco_filter:
+        friendly_name: Airco filers schoonmaken over
+        entity_id: sensor.time
+        unit_of_measurement: 'dagen'
+        # Airco filters schoonmaken, interval 1 keer per 6 maanden --> 15778463 seconden
+        value_template: >
+          {{ ((( state_attr('input_datetime.airco_filters','timestamp') + 15778463 ) - as_timestamp(now())) | int / 86400) | round(0) }}
+
+alert:
+  huishoudelijke_taken_herinnering:
+    name: "LET OP!: Er zijn nog openstaande huishoudelijke taken."
+    entity_id: input_boolean.task_alert
+    state: 'on'
+    repeat:
+      - 60
+      - 120
+      - 240
+    can_acknowledge: true
+    skip_first: true
+    message: >
+      {% if (states('sensor.dagen_sinds_plant_lamp_water_geven') | int) < 1 %} De plant met lamp moet nog water.
+      {% endif %}
+      {% if (states('sensor.dagen_sinds_planten_water_geven') | int) < 1 %} De planten moeten nog water.
+      {% endif %}
+      {% if (states('sensor.dagen_sinds_quooker_onderhoud') | int) < 1 %} De Quooker moet nog groot onderhoud.
+      {% endif %}
+      {% if (states('sensor.dagen_sinds_quooker_zwart_pijpje') | int) < 1 %} Het zwarte pijpje van de Quooker moet nog doorgespoeld worden.
+      {% endif %}
+      {% if (states('sensor.dagen_sinds_autobanden_draaien') | int) < 1 %} De autobanden moeten nog gedraaid worden.
+      {% endif %}
+      {% if (states('sensor.dagen_sinds_airco_filter') | int) < 1 %} De airco filters moeten nog schoongemaakt worden.
+      {% endif %}
+    notifiers:
+      - gertjan_push

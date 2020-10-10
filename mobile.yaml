@@ -1,0 +1,162 @@
+title: Home
+views:
+  - badges: null
+    path: default_view
+    title: Home
+    cards:
+      - type: custom:button-card
+        entity: group.woonkamer
+        icon: mdi:sofa
+        show_icon: true
+        name: Woonkamer
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        entity: group.keuken
+        icon: mdi:silverware-variant
+        show_icon: true
+        name: Keuken
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        entity: group.buitenverlichting
+        icon: mdi:home
+        show_icon: true
+        name: Aan het huis
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        entity: group.tuinverlichting
+        con: mdi:flower-tulip
+        show_icon: true
+        name: Tuin
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        entity: switch.waterpomp
+        icon: mdi:sprinkler-variant
+        show_icon: true
+        name: Waterpomp
+        tap_action:
+          action: toggle
+      - type: entities
+        entities:
+          - cover.grote_raam
+          - cover.keukenraam
+        show_header_toggle: true
+        title: Screens
+      - type: entities
+        entities:
+          - group.gertjan
+          - group.lisette
+          - device_tracker.galaxys9
+          - device_tracker.iphone_2
+        show_header_toggle: true
+        title: familie
+      - type: entities
+        title: Modus
+        show_header_toggle: false
+        entities:
+        - entity: input_boolean.maintenance_mode
+          icon: mdi:wrench
+        - entity: input_boolean.vakantie_mode
+          icon: mdi:beach
+        - entity: input_boolean.waterpomp_buiten
+          icon: mdi:sprinkler-variant
+      - type: entities
+        title: Airconditioners
+        show_header_toggle: false
+        entities:
+        - entity: climate.overloop
+          icon: mdi:air-conditioner 
+        - entity: climate.zolder
+          icon: mdi:air-conditioner
+      - type: entity
+        entity: sensor.gemiddelde_temperature_boven
+        name: Gemiddelde temperatuur boven
+        icon: mdi:thermostat
+      - type: entity
+        entity: climate.ouder_sk
+        name: Master bedroom
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.aiden
+        name: Aiden
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.ella
+        name: Ella
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.badkamer
+        name: Badkamer
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.keuken
+        name: Keuken
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.bijkamer
+        name: Bijkamer
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.woonkamer_a
+        name: Woonkamer achter
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.woonkamer_m
+        name: Woonkamer midden
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity
+        entity: climate.berging
+        name: Berging
+        attribute: current_temperature
+        icon: mdi:thermostat
+        unit: C
+      - type: entity-filter
+        state_filter:
+        - operator: "<"
+          value: 5
+        card:
+          title: "Onderhouds taken"
+        entities:
+          - entity: sensor.dagen_sinds_plant_lamp_water_geven
+            icon: mdi:flower
+          - entity: sensor.dagen_sinds_planten_water_geven
+            icon: mdi:flower
+          - entity: sensor.dagen_sinds_quooker_onderhoud
+            icon: mdi:water-pump
+          - entity: sensor.dagen_sinds_quooker_zwart_pijpje
+            icon: mdi:water-pump
+          - entity: sensor.dagen_sinds_autobanden_draaien
+            icon: mdi:car-tire-alert
+      - type: entities
+        title: Werk Taak Bij
+        show_header_toggle: false
+        entities:
+          - input_select.onderhoudstaken
+          - script.zet_datum_onderhouds_taken
+      - type: glance
+        entities:
+        - entity: sensor.total_rain_last_2_days
+          name: 'Gevallen'
+          icon: mdi:chart-histogram
+        - entity: sensor.total_rain_forecast
+          name: 'Voorspeld'
+          icon: mdi:chart-histogram

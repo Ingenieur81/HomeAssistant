@@ -1,0 +1,95 @@
+homeassistant:
+  #customize:
+
+automation:
+#Droger
+#Normale stand: +-1700W boven long term mean
+#Lage temperatuur stand: +-1200W boven long term mean
+  # Zet de droger naar standby als de wasmachine klaar is
+  - alias: '[Droger] - Zet droger standby als wasmachine klaar'
+    trigger:
+      - platform: state
+        entity_id: sensor.wasmachine_washer_machine_state
+        to: run
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.droger_status
+          option: Standby
+  # Als het korte termijn gemiddelde stroomverbruik hoger is dan het lange termijn gemiddelde + 1200W voor 20 minuten 
+  # markeer de droger als drogen
+  - alias: '[Droger] - Zet droger naar drogen'
+    trigger:
+    - platform: template
+      value_template: >
+        {{ states.sensor.statistics_on_power_consumption.state | float > states.sensor.long_term_statistics_on_power_consumption.state | float + 1200 }}
+      for:
+          minutes: 25
+    condition:
+      condition: or
+      conditions:
+        # - condition:  state
+        #   entity_id: input_select.droger_status
+        #   state: Uit
+        - condition:  state
+          entity_id: input_select.droger_status
+          state: Standby
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.droger_status
+          option: Drogen
+  # Als het korte termijn gemiddelde stroomverbruik lager is dan het lange termijn gemiddelde + 1200W voor 15 minuten 
+  # markeer de droger als klaar
+  - alias: '[Droger] - Zet Droger naar klaar en stuur bericht'
+    trigger:
+    - platform: template
+      value_template: >
+        {{ states.sensor.statistics_on_power_consumption.state | float < states.sensor.long_term_statistics_on_power_consumption.state | float + 1200 }}
+      for:
+          minutes: 15
+    condition:
+    - condition: state
+      entity_id: input_select.droger_status
+      state: Drogen
+    action:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.droger_status
+          option: Klaar
+  # Als de droger 5 minuten klaar is stuur een bericht dat de droger klaar is en zet hem dan naar uit.
+  - alias: '[Droger] - Zet droger uit'
+    trigger:
+      - platform: state
+        entity_id: input_select.droger_status
+        to: Klaar
+        for:
+          minutes: 5
+      # - platform: state
+      #   entity_id: input_select.droger_status
+      #   to: standby
+      #   for:
+      #     hours: 6
+    action:
+      - service: notify.hass_notification
+        data_template:
+          title: "Droger Status"
+          message: "De droger is klaar."
+          target:
+          - device/GertjanOP3T
+          - device/Lisette
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.droger_status
+          option: Uit
+
+# Bovenop lange termijn gemiddelde
+#Kookplaat
+#1-pit stand 7: +-600W
+#2-pitten stand 7: +-800W
+#3-pitten stand 7: +-1500W
+#4-pitten stand 7: +-2100W
+
+#Oven
+# Stomen 100C: +-800W
+# Brood 220C: +-2600W

@@ -1,0 +1,26 @@
+    #
+    # Climate view
+    #
+    title: Climate
+    icon: mdi:home-thermometer
+    panel: false
+    path: Climate
+    cards:
+      - entity: climate.aiden
+        type: thermostat
+      - entity: climate.badkamer
+        type: thermostat
+      - entity: climate.berging
+        type: thermostat
+      - entity: climate.bijkamer
+        type: thermostat
+      - entity: climate.ella
+        type: thermostat
+      - entity: climate.keuken
+        type: thermostat
+      - entity: climate.ouder_sk
+        type: thermostat
+      - entity: climate.woonkamer_a
+        type: thermostat
+      - entity: climate.woonkamer_m
+        type: thermostat

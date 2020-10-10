@@ -1,0 +1,23 @@
+    #
+    # Media view
+    #
+    title: Media
+    icon: mdi:theater
+    panel: false
+    path: Media
+    cards:
+      - entity: remote.harmony_hub_2
+        type: media-control
+        icon: mdi:remote-tv
+      - entity: media_player.playstation_4
+        type: media-control
+        icon: mdi:sony-playstation
+      - entity: media_player.kd_55xf9005
+        type: media-control
+        icon: mdi:television
+      - entity: camera.camera_aiden
+        type: picture-entity
+      - entity: camera.camera_ella
+        type: picture-entity
+      - entity: camera.front_door_2
+        type: picture-entity

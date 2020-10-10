@@ -1,0 +1,35 @@
+    #
+    # Automatisering view
+    #
+    title: Automatiseringen
+    icon: mdi:home-automation
+    panel: false
+    path: Automatiseringen
+    badges:
+      - timer.dagnachtcyclusbinnen
+      - timer.dagnachtcyclusbuiten
+      - timer.regenachtigedag
+      - timer.woonkamer
+    cards:
+      - entities:
+          - entity: automation.buitenverlichting_uit
+          - entity: automation.woonkamerverlichting_uit
+          - entity: automation.woonkamer_lampen_aan
+          - entity: automation.afstandbediening_gebruikt
+          - entity: automation.afstandbediening_reset
+          - entity: automation.buitenverlichting_aan
+          - entity: automation.woonkamerverlichting_uit_in_de_nacht
+          - entity: automation.schakel_zwave_woonkamer_verlichting_aan
+          - entity: automation.schakel_zwave_woonkamer_verlichting_uit
+          - entity: automation.tuinverlichting_uit_in_de_nacht
+          - entity: automation.dag_nacht_monitor_binnen
+          - entity: automation.dag_nacht_monitor_buiten
+        title: Automatisering
+        type: entities
+      - entities:
+          - entity: input_boolean.dag_binnen
+          - entity: input_boolean.dag_buiten
+          - entity: input_boolean.afstandbediening
+          - entity: input_boolean.weather
+        title: Boolean invoer
+        type: entities

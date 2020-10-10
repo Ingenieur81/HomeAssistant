@@ -3,8 +3,7 @@
 #
 # Uit
 - id: '1'
-  alias: '[Garden] - Buitenverlichting uit'
-  initial_state: true
+  alias: '[Tuin] - Buitenverlichting uit'
   trigger:
   - platform: numeric_state
     entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
@@ -20,8 +19,7 @@
       entity_id: group.tuinverlichting
 # Aan
 - id: '2'
-  alias: '[Garden] - Buitenverlichting aan'
-  initial_state: true
+  alias: '[Tuin] - Buitenverlichting aan'
   trigger:
   - platform: numeric_state
     entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
@@ -40,8 +38,7 @@
 # 
 # Uit
 - id: '3'
-  alias: '[Living] - Woonkamerverlichting uit'
-  initial_state: true
+  alias: '[Woonkamer] - Woonkamerverlichting uit'
   trigger:
   - platform: numeric_state
     entity_id: sensor.gemiddeld_lichtniveau
@@ -58,11 +55,10 @@
     data:
       entity_id:  
       - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
-      - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2
+      - switch.smart_plug_plant_lamp_switch_3
 # Aan
 - id: '4'
-  alias: '[Living] - Woonkamer lampen aan'
-  initial_state: true
+  alias: '[Woonkamer] - Woonkamer lampen aan'
   trigger:
   - platform: numeric_state
     entity_id: sensor.gemiddeld_lichtniveau
@@ -87,30 +83,42 @@
       - light.keuken
       color_temp: 443
       brightness: 200
+  - service: light.turn_on
+    data:
+      entity_id: light.hal_plafond
+      color_temp: 443
+      brightness: 65
   - service: homeassistant.turn_on
     data:
       entity_id:   
       - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
-      - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2
+      - switch.smart_plug_plant_lamp_switch_3
 # Uit in de nacht
 - id: '5'
-  alias: '[Living] - Woonkamerverlichting uit in de nacht'
-  initial_state: true
+  alias: '[Woonkamer] - Woonkamerverlichting uit in de nacht'
   trigger:
   - platform: time
     at: '22:30:00'
   condition:
-    condition: and
-    conditions:
-    - condition: state
-      entity_id: timer.woonkamer
-      state: idle
-    - condition: state
-      entity_id: light.woonkamer
-      state: 'on'
-    - condition: state
-      entity_id: group.televisie_activiteit
-      state: 'off'
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: timer.woonkamer
+        state: idle
+      - condition: template
+        value_template: >
+          {{ states.remote.harmony_hub_2.attributes["current_activity"] == "PowerOff" }}
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: light.woonkamer
+          state: 'on'
+        - condition: state
+          entity_id: switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+          state: 'on'
+        - condition: state
+          entity_id: switch.smart_plug_plant_lamp_switch_3
+          state: 'on'
   action:
   - delay: >
       {{ (range(0, 2)|random|int) }}:{{ (range(1, 59)|random|int) }}:00
@@ -123,13 +131,12 @@
     data:
       entity_id:   
       - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
-      - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2
+      - switch.smart_plug_plant_lamp_switch_3
 #
 # Afstandbediening
 #
 - id: '6'
   alias: '[Remote] - Afstandbediening gebruikt'
-  initial_state: true
   trigger:
   - platform: state
     entity_id: sensor.afstandbediening_woonkamer
@@ -161,7 +168,6 @@
 # Afstandbediening reset
 - id: '7'
   alias: '[Remote] - Afstandbediening reset'
-  initial_state: true
   trigger:
   - platform: numeric_state
     entity_id: sensor.gemiddeld_lichtniveau
@@ -173,8 +179,7 @@
     entity_id: input_boolean.afstandbediening
 # Verlichting uit door afstandbediening
 - id: '8'
-  alias: '[Living] - Schakel Zwave woonkamer verlichting uit'
-  initial_state: true
+  alias: '[Woonkamer] - Schakel Zwave woonkamer verlichting uit'
   trigger:
   - entity_id: sensor.afstandbediening_woonkamer
     platform: state
@@ -183,11 +188,10 @@
   - service: homeassistant.turn_off
     entity_id:  
     - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
-    - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2
+    - switch.smart_plug_plant_lamp_switch_3
 # Verlichting aan door afstandbediening
 - id: '9'
-  alias: '[Living] - Schakel Zwave woonkamer verlichting aan'
-  initial_state: true
+  alias: '[Woonkamer] - Schakel Zwave woonkamer verlichting aan'
   trigger:
   - entity_id: sensor.afstandbediening_woonkamer
     platform: state
@@ -196,13 +200,12 @@
   - service: homeassistant.turn_on
     entity_id:  
     - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
-    - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2
+    - switch.smart_plug_plant_lamp_switch_3
 #
 # Tuinverlichting uit
 # 
 - id: '10'
-  alias: '[Garden] - Tuinverlichting uit in de nacht'
-  initial_state: true
+  alias: '[Tuin] - Tuinverlichting uit in de nacht'
   trigger:
   - platform: time
     at: '23:00:00'
@@ -219,8 +222,7 @@
 # Regenachtige dag
 #
 - id: '11'
-  alias: '[Rainy] - Regenachtige dag monitor'
-  initial_state: true
+  alias: '[Weer] - Regenachtige dag monitor'
   trigger:
   - below: 120
     entity_id: sensor.gemiddeld_lichtniveau
@@ -261,8 +263,7 @@
       {% endif %}
 # Verlichting uit bij regenachtige dag
 - id: '12'
-  alias: '[Rainy] - Regenachtige dag verlichting uit'
-  initial_state: true
+  alias: '[Weer] - Regenachtige dag verlichting uit'
   trigger:
   - platform: state
     entity_id: input_boolean.regenachtigedag
@@ -278,11 +279,10 @@
     data:
       entity_id: 
       - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
-      - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2
+      - switch.smart_plug_plant_lamp_switch_3
 # Verlichting aan bij regenachtige dag
 - id: '13'
-  alias: '[Rainy] - Regenachtige dag verlichting aan'
-  initial_state: true
+  alias: '[Weer] - Regenachtige dag verlichting aan'
   trigger:
   - platform: state
     entity_id: input_boolean.regenachtigedag
@@ -302,61 +302,61 @@
     data:
       entity_id: 
       - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
-      - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch_2
+      - switch.smart_plug_plant_lamp_switch_3
 #
 # Theming
 #
 # Dag licht theme
 - id: '14'
-  alias: '[Theme] - Light theme after Sunrise'
+  alias: '[Thema] - Light theme after Sunrise'
   trigger:
-    platform: sun
-    event: sunrise
+    - platform: sun
+      event: sunrise
   action:
     - service: frontend.set_theme
       data:
-# Light theme bij start
+        # Light theme bij start
         name: Google - Light
 - id: '15'
-  alias: '[Theme] - Dark theme after Sunset'
+  alias: '[Thema] - Dark theme after Sunset'
   trigger:
-    platform: sun
-    event: sunset
+    - platform: sun
+      event: sunset
   action:
     - service: frontend.set_theme
       data:
-# Dark theme bij start
+        # Dark theme bij start
         name: Google - Dark
 - id: '16'
-  alias: '[Theme] - Light theme after reboot in day'
+  alias: '[Thema] - Light theme after reboot in day'
   trigger:
-    platform: homeassistant
-    event: start
+    - platform: homeassistant
+      event: start
   condition:
     - condition: state
       entity_id: sun.sun
       state: 'above_horizon'
   action:
-    service: frontend.set_theme
-    data:
-# Light theme bij zonsopgang
-      name: Google - Light
+    - service: frontend.set_theme
+      data:
+        # Light theme bij zonsopgang
+        name: Google - Light
 - id: '17'
-  alias: '[Theme] - Dark theme after reboot in night'
+  alias: '[Thema] - Dark theme after reboot in night'
   trigger:
-    platform: homeassistant
-    event: start
+    - platform: homeassistant
+      event: start
   condition:
-    condition: state
-    entity_id: sun.sun
-    state: 'below_horizon'
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
   action:
-    service: frontend.set_theme
-    data:
-# Dark theme bij zonsondergang
-      name: Google - Dark
+    - service: frontend.set_theme
+      data:
+        # Dark theme bij zonsondergang
+        name: Google - Dark
 - id: '18'
-  alias: '[Motion] - Timer voor beweging in de woonkamer'
+  alias: '[Beweging] - Timer voor beweging in de woonkamer'
   initial_state: 'on'
   trigger:
   - platform: state
@@ -370,8 +370,7 @@
 # Deurbel
 #
 - id: '19'
-  alias: '[Doorbell] - Verlichting knipperen bij aanbellen avond'
-  initial_state: true
+  alias: '[Deurbel] - Verlichting knipperen bij aanbellen avond'
   trigger:
   - platform: state
     entity_id: binary_sensor.front_door_ding
@@ -399,7 +398,7 @@
     - group.woonkamer
   - delay: 00:00:07
 - id: '20'
-  alias: '[Kitchen] - Dim keukenverlichting om 20u'
+  alias: '[Keuken] - Dim keukenverlichting om 20u'
   trigger:
   - platform: time
     at: '20:00:00'
@@ -423,223 +422,118 @@
   alias: '[Update] - Update Available Notification'
   trigger:
   - platform: state
-    entity_id: binary_sensor.updater
-    from: 'off'
-    to: 'on'
+    entity_id: sensor.majorupdateavailable
+    to: 'true'
+  condition:
+  - condition: template
+    value_template: >
+      {{ states.sensor.installed_version.state.split(".")[1] != states.binary_sensor.updater.attributes.newest_version.split(".")[1] }}
   action:
   - service: notify.hass_notification
     data_template:
-      title: "Home Assistant Update Notificatie"
+      title: "Home Assistant Major Update Notificatie"
       message: >
         Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version') }} is available.
       data:
         url: "https://www.home-assistant.io/latest-release-notes/"
-      target: device/Gertjan
-#
-# Droger
-#
-# Zet de droger naar standby als de wasmachine klaar is
+      target: device/GertjanOP3T
+
+# Airconditioning
 - id: '22'
-  alias: '[Droger] - Zet droger standby als wasmachine klaar'
-  trigger:
-    - platform: state
-      entity_id: sensor.wasmachine_washer_machine_state
-      to: run
-  action:
-    - service: input_select.select_option
-      data:
-        entity_id: input_select.droger_status
-        option: Standby
-# Als het gemiddelde stroomverbruik hoger dan 1800W is voor 30 minuten 
-# markeer de droger als drogen
-- id: '23'
-  alias: '[Droger] - Zet droger naar drogen'
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.statistics_on_power_consumption
-    above: 1800
-    for:
-        minutes: 25
-  condition:
-    condition: or
-    conditions:
-      - condition:  state
-        entity_id: input_select.droger_status
-        state: Uit
-      - condition:  state
-        entity_id: input_select.droger_status
-        state: Standby
-  action:
-    - service: input_select.select_option
-      data:
-        entity_id: input_select.droger_status
-        option: Drogen
-# Als het gemiddelde stroomverbruik onder 1200W komt is de droger klaar
-# Stuur een bericht dat de droger klaar is
-- id: '24'
-  alias: '[Droger] - Zet Droger naar klaar en stuur bericht'
+  alias: '[Airco] - Zet airco overloop aan'
   trigger:
     - platform: numeric_state
-      entity_id: sensor.statistics_on_power_consumption
-      below: 1200
-      for:
-        minutes: 10
+      entity_id: sensor.gemiddelde_temperature_boven
+      above: 24
   condition:
-  - condition: state
-    entity_id: input_select.droger_status
-    state: Drogen
+    - condition: or
+      conditions:
+      - condition: numeric_state
+        entity_id: sensor.br_minimum_temperature_1d
+        above: 18
+      - condition: numeric_state
+        entity_id: sensor.br_temperature
+        above: 28
+    - condition: state
+      entity_id: input_boolean.vakantie_mode
+      state: 'off'
   action:
-    - service: input_select.select_option
+    - service: climate.set_fan_mode
       data:
-        entity_id: input_select.droger_status
-        option: Klaar
+        entity_id: climate.overloop
+        fan_mode: '5'
+    - service: climate.set_temperature
+      data:
+        entity_id: climate.overloop
+        temperature: 18
+        hvac_mode: cool
+    - service: climate.turn_on
+      entity_id: climate.overloop
+- id: '23'
+  alias: '[Airco] - Zet airco zolder aan'
+  trigger:
+    - platform: template
+      value_template: >
+          {{ states.climate.overloop.attributes['current_temperature'] | round(1) > 24 }}
+  condition:
+    - condition: or
+      conditions:
+      - condition: numeric_state
+        entity_id: sensor.br_minimum_temperature_1d
+        above: 18
+      - condition: numeric_state
+        entity_id: sensor.br_temperature
+        above: 28
+    - condition: state
+      entity_id: input_boolean.vakantie_mode
+      state: 'off'
+  action:
+    - service: climate.set_temperature
+      data:
+        entity_id: climate.zolder
+        temperature: 18
+        hvac_mode: cool
+    - service: climate.set_fan_mode
+      data:
+        entity_id: climate.zolder
+        fan_mode: 'Auto'
+    - service: climate.set_swing_mode
+      data:
+        entity_id: climate.zolder
+        swing_mode: '3D'
+    - service: climate.turn_on
+      entity_id: climate.overloop
+- id: '24'
+  alias: '[Airco] - Zet airco overloop uit'
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.gemiddelde_temperature_boven
+      below: 18
+  action:
+    - service: climate.turn_off
+      entity_id: climate.zolder
+- id: '25'
+  alias: '[Airco] - Zet airco zolder uit'
+  trigger:
+    - platform: template
+      value_template: >
+          {{ states.climate.overloop.attributes['current_temperature'] | round(1) < 18 }}
+  action:
+    - service: climate.turn_off
+      entity_id: climate.zolder
+# Error notificatie
+- id: '26'
+  alias: '[Logging] - Error notificatie'
+  trigger:
+      platform: event
+      event_type: system_log_event
+      event_data:
+        level: ERROR
+  action:
     - service: notify.hass_notification
       data_template:
-        title: "Droger Status"
-        message: "De droger is klaar."
+        title: "Error notificatie"
+        message: >
+          {{ trigger.event.data.message }}
         target:
-        - device/Gertjan
-        - device/Lisette
-# Als de droger 5 minuten klaar is of als de droger langer dan 6 uur op
-# standby staat zet hem dan naar uit.
-- id: '25'
-  alias: '[Droger] - Zet droger uit'
-  trigger:
-    - platform: state
-      entity_id: input_select.droger_status
-      to: Klaar
-      for:
-        minutes: 5
-    - platform: state
-      entity_id: input_select.droger_status
-      to: standby
-      for:
-        hours: 6
-  action:
-    - service: input_select.select_option
-      data:
-        entity_id: input_select.droger_status
-        option: Uit
-#
-# Screens
-#
-# Naar beneden, buiten koud en familie thuis
-- id: '26'
-  alias: '[Screens] - Screens naar beneden bij koud weer'
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
-      above: 32000
-      for:
-        minutes: 3
-    - platform: state
-      entity_id: group.familie
-      from: "not_home"
-      to: "home"
-      for:
-        minutes: 3
-  condition:
-    condition: and
-    conditions:
-      - condition: state
-        entity_id: input_boolean.maintenance_mode
-        state: 'off'
-      - condition: state
-        entity_id: group.familie
-        state: home
-      - condition: numeric_state
-        entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
-        above: 31000
-      - condition: numeric_state
-        entity_id: sensor.zon_azimuth
-        above: 170
-      - condition: numeric_state
-        entity_id: sensor.zon_azimuth
-        below: 260
-      - condition: numeric_state
-        entity_id: sensor.br_temperature
-        below: 16
-      - condition: numeric_state
-        entity_id:  sensor.br_wind_force
-        below: 7
-      #- condition: template
-      #  value_template: >
-      #    {{ states('sensor.br_condition') in ['clear', 'partlycloudy'] }}
-      - condition: or
-        conditions:
-        - condition: template
-          value_template: >
-            {{ (state_attr('cover.grote_raam', 'current_position') | int) == 100 }}
-        - condition: template
-          value_template: >
-            {{ (state_attr('cover.keukenraam', 'current_position') | int) == 100 }}
-  action:
-    - service: cover.set_cover_position
-      entity_id: group.alle_screens
-      data_template:
-        position: 40
-# Naar beneden, buiten warm
-- id: '27'
-  alias: '[Screens] - Screens naar beneden bij warm weer'
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
-      above: 28000
-      for:
-        minutes: 3
-  condition:
-    condition: and
-    conditions:
-      - condition: state
-        entity_id: input_boolean.maintenance_mode
-        state: 'off'
-      - condition: numeric_state
-        entity_id: sensor.br_temperature
-        above: 16
-      - condition: numeric_state
-        entity_id: sensor.br_wind_force
-        below: 7
-      - condition: numeric_state
-        entity_id: sensor.zon_azimuth
-        below: 270
-      #- condition: template
-      #  value_template: >
-      #    {{ states('sensor.br_condition') in ['clear', 'partlycloudy'] }}
-      - condition: or
-        conditions:
-        - condition: template
-          value_template: >
-            {{ (state_attr('cover.grote_raam', 'current_position') | int) == 100 }}
-        - condition: template
-          value_template: >
-            {{ (state_attr('cover.keukenraam', 'current_position') | int) == 100 }}
-  action:
-    - service: cover.close_cover
-      entity_id: group.alle_screens
-# Naar boven
-- id: '28'
-  alias: '[Screens] - Screens naar boven'
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
-      below: 20000
-      for:
-        minutes: 5
-    - platform: numeric_state
-      entity_id: sensor.br_wind_force
-      above: 7
-    - platform: numeric_state
-      entity_id: sensor.zon_azimuth
-      above: 280
-  condition:
-    condition: or
-    conditions:
-      - condition: template
-        value_template: >
-          {{ (state_attr('cover.grote_raam', 'current_position') | int) != 100 }}
-      - condition: template
-        value_template: >
-          {{ (state_attr('cover.keukenraam', 'current_position') | int) != 100 }}
-  action:
-    - service: cover.open_cover
-      entity_id: group.alle_screens
+        - device/GertjanOP3T

@@ -1,0 +1,181 @@
+homeassistant:
+  #customize:
+
+automation:
+  # Tuin beregening
+  - alias: '[Tuin] - Zet tuin-moet-water boolean aan'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.total_rain_last_2_days
+        below: 0.5
+      - platform: numeric_state
+        entity_id: sensor.total_rain_forecast
+        below: 0.5
+      - platform: template
+        value_template: >
+          {{ (( as_timestamp(now()) - states.input_datetime.tuinirrigatie.attributes.timestamp | int ) / 86400 ) > 2.5 }}
+      # - platform: time
+      #   at: '0:00:00'
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.total_rain_last_2_days
+        below: 0.5
+      - condition: numeric_state
+        entity_id: sensor.total_rain_forecast
+        below: 0.5
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.tuin_moet_water
+  - alias: '[Tuin] - Zet waterpomp aan'
+    trigger:
+      - platform: time
+        at: '2:30:00'
+      # - platform: sun
+      #   event: sunrise
+      #   offset: '-03:00:00'      
+    condition:
+      - condition: state
+        entity_id: input_boolean.waterpomp_buiten
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.tuin_moet_water
+        state: 'on'
+      # Meer dan 3 dagen geleden dat de pomp aan is geweest
+      - condition: template
+        value_template: >
+          {{ (( as_timestamp(now()) - states.input_datetime.tuinirrigatie.attributes.timestamp | int ) / 86400 ) > 3 }}
+    action:
+      - service: homeassistant.turn_on
+        entity_id: switch.waterpomp
+      - service: input_datetime.set_datetime
+        entity_id: input_datetime.tuinirrigatie
+        data_template:
+          date: "{{ as_timestamp(now()) | timestamp_custom('%Y-%m-%d') }}"
+      - service: notify.hass_notification
+        data_template:
+          title: "Beregening"
+          message: "Beregening gestart."
+          target:
+            - device/Gertjan
+  - alias: '[Tuin] - Zet waterpomp uit na 2:45 uur aan te hebben gestaan'
+    trigger:
+      - platform: state
+        entity_id: switch.waterpomp
+        to: 'on'
+        for:
+          hours: 2
+          minutes: 45
+    action:
+      - service: homeassistant.turn_off
+        entity_id: switch.waterpomp
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.tuin_moet_water
+      - service: notify.hass_notification
+        data_template:
+          title: "Beregening"
+          message: "Beregening gestopt."
+          target:
+            - device/GertjanOP3T
+  - alias: '[Tuin] - Beregening winterklaar maken'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.minimum_temperature_forecast
+        below: 0.0
+    condition:
+      - condition: state
+        entity_id: input_boolean.waterpomp_buiten
+        state: 'on'
+    action:
+      - service: notify.hass_notification
+        data_template:
+          title: "Winter is coming"
+          message: >
+            Het gaat vriezen, maak de beregening winterklaar.
+            {% set T1 = ( states.sensor.br_minimum_temperature_1d.state | float ) %}
+            {% set T2 = ( states.sensor.br_minimum_temperature_2d.state | float ) %}
+            {% set T3 = ( states.sensor.br_minimum_temperature_3d.state | float ) %}
+            {% set T4 = ( states.sensor.br_minimum_temperature_4d.state | float ) %}
+            {% set T5 = ( states.sensor.br_minimum_temperature_5d.state | float ) %}
+            {% if T1 < 0 %} 
+              Morgen wordt een minimum temperatuur van {{ T1 }} verwacht.
+            {% endif %}
+            {% if T2 < 0 %} 
+              Overmorgen wordt een minimum temperatuur van {{ T2 }} verwacht.
+            {% endif %}
+            {% if T3 < 0 %} 
+              Over 3 dagen wordt een minimum temperatuur van {{ T3 }} verwacht.
+            {% endif %}
+            {% if T4 < 0 %} 
+              Over 4 dagen wordt een minimum temperatuur van {{ T4 }} verwacht.
+            {% endif %}
+            {% if T5 < 0 %} 
+              Over 5 dagen wordt een minimum temperatuur van {{ T5 }} verwacht.
+            {% endif %}
+          target:
+          - device/Gertjan
+
+input_boolean:
+  waterpomp_buiten:
+    name: Waterpomp staat buiten
+    initial: on
+    icon: mdi:sprinkler-variant
+  tuin_moet_water:
+    name: Tuin heeft water nodig
+    initial: off
+    icon: mdi:water-alert-outline
+
+input_datetime:
+  tuinirrigatie:
+    name: Tuinirrigatie
+    has_date: true
+
+sensor:
+  # Rain statistics for the garden irrigation
+  - platform: statistics
+    name: total rain last 2 days
+    entity_id: sensor.br_rain_last_24h
+    #entity_id: sensor.br_rain_1d
+    # Elke seconde voor 2 dagen: 24x60x60x2 afgerond
+    sampling_size: 300
+    precision: 2
+    max_age:
+      days: 2
+  - platform: statistics
+    name: total rain coming 2 days
+    entity_id: sensor.total_rain_forecast
+    # Elke seconde voor 2 dagen: 24x60x60x2 afgerond
+    sampling_size: 250
+    precision: 2
+    max_age:
+      days: 2
+  - platform: template
+    sensors:
+      total_rain_forecast:
+        # entity_id: sensor.time
+        value_template: >
+          {% set R1 = (( states.sensor.br_rainchance_1d.state | int ) / 100 ) * ( states.sensor.br_rain_1d.state | float ) %}
+          {% set R2 = (( states.sensor.br_rainchance_2d.state | int ) / 100 ) * ( states.sensor.br_rain_2d.state | float ) %}
+          {% set R3 = (( states.sensor.br_rainchance_3d.state | int ) / 100 ) * ( states.sensor.br_rain_3d.state | float ) %}
+          {% set R4 = (( states.sensor.br_rainchance_4d.state | int ) / 100 ) * ( states.sensor.br_rain_4d.state | float ) %}
+          {{ ( R2 + R3 ) | round(2) }} 
+        attribute_templates:
+          Regen x kans dag 1: "{{ (( states.sensor.br_rainchance_1d.state | int ) / 100 ) * (states.sensor.br_rain_1d.state | float ) }}"
+          Regen x kans dag 2: "{{ (( states.sensor.br_rainchance_2d.state | int ) / 100 ) * (states.sensor.br_rain_2d.state | float ) }}"
+          Regen x kans dag 3: "{{ (( states.sensor.br_rainchance_3d.state | int ) / 100 ) * (states.sensor.br_rain_3d.state | float ) }}"
+          Regen x kans dag 4: "{{ (( states.sensor.br_rainchance_4d.state | int ) / 100 ) * (states.sensor.br_rain_4d.state | float ) }}"
+        unit_of_measurement: mm
+      minimum_temperature_forecast:
+        value_template: >
+          {% set T1 = ( states.sensor.br_minimum_temperature_1d.state | float ) %}
+          {% set T2 = ( states.sensor.br_minimum_temperature_2d.state | float ) %}
+          {% set T3 = ( states.sensor.br_minimum_temperature_3d.state | float ) %}
+          {% set T4 = ( states.sensor.br_minimum_temperature_4d.state | float ) %}
+          {% set T5 = ( states.sensor.br_minimum_temperature_5d.state | float ) %}
+          {{ (T1, T2, T3, T4, T5) | min }}
+        attribute_templates:
+          Minimum temperatuur dag 1: "{{ ( states.sensor.br_minimum_temperature_1d.state | float ) }}"
+          Minimum temperatuur dag 2: "{{ ( states.sensor.br_minimum_temperature_2d.state | float ) }}"
+          Minimum temperatuur dag 3: "{{ ( states.sensor.br_minimum_temperature_3d.state | float ) }}"
+          Minimum temperatuur dag 4: "{{ ( states.sensor.br_minimum_temperature_4d.state | float ) }}"
+          Minimum temperatuur dag 5: "{{ ( states.sensor.br_minimum_temperature_5d.state | float ) }}"
+        unit_of_measurement: C

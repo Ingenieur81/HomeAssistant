@@ -19,8 +19,11 @@ homeassistant:
   # Customization file
   customize: !include customize.yaml
   # whitelisted external storage directories
-  whitelist_external_dirs: 
+  allowlist_external_dirs: 
     - /tmp
+  # Internal and External URL's
+  external_url: !secret external_url
+  internal_url: !secret internal_url
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
@@ -28,6 +31,10 @@ frontend:
   #themes: !include themes.yaml
   themes: !include_dir_merge_named themes
   javascript_version: latest
+
+# System logging to trigger automations
+system_log:
+  fire_event: true
 
 # Recording of states of the last 2 days only
 recorder:
@@ -50,6 +57,15 @@ history:
       - device_tracker.android77ac869bd554e5b7
       - device_tracker.iphone_2
       - device_tracker.galaxys9
+      - zwave.nig1
+      - zwave.nig2
+      - zwave.nig3
+      - zwave.nig4
+      - zwave.nig5
+      - zwave.nig6
+      - zwave.nig7
+      - zwave.nig8
+      - zwave.nig9
   exclude:
     entities:
     - binary_sensor.updater
@@ -85,6 +101,11 @@ history:
     - sensor.br_temperature_3d
     - sensor.br_temperature_4d
     - sensor.br_temperature_5d
+    - sensor.br_mintemp_1d
+    - sensor.br_mintemp_2d
+    - sensor.br_mintemp_3d
+    - sensor.br_mintemp_4d
+    - sensor.br_mintemp_5d
     - sensor.br_rainchance_1d
     - sensor.br_rainchance_2d
     - sensor.br_rainchance_3d
@@ -160,6 +181,8 @@ influxdb:
       override_measurement: humidity
     sensor.*temperature:
       override_measurement: temperature
+    sensor.rain_*:
+      override_measurement: mm
 
 lovelace:
   mode: yaml
@@ -196,17 +219,29 @@ lovelace:
       type: module
     - url: /hacsfiles/dual-gauge-card/dual-gauge-card.js
       type: js
-
+  dashboards:
+    tablet-dash: # Needs to contain a hyphen (-)
+      mode: yaml
+      filename: tablet.yaml
+      title: Tablet
+      icon: mdi:tablet-dashboard
+      show_in_sidebar: true
+    mobile-dash:
+      mode: yaml
+      title: Mobile
+      icon: mdi:android
+      show_in_sidebar: true
+      filename: mobile.yaml
 # Home Assistant Community Store
 hacs:
   token: !secret my_github_access_token
 
 # MDI icon index panel
-panel_iframe:
-  mdiindex:
-    title: MDI Icon Index
-    icon: mdi:vector-square
-    url: https://cdn.rawgit.com/james-fry/home-assistant-mdi/efd95d7a/home-assistant-mdi.html
+#panel_iframe:
+#  mdiindex:
+#    title: MDI Icon Index
+#    icon: mdi:vector-square
+#    url: https://cdn.rawgit.com/james-fry/home-assistant-mdi/efd95d7a/home-assistant-mdi.html
 
 python_script:
 
@@ -244,10 +279,10 @@ weather:
     
 # Z-wave controller
 zwave:
-   usb_path: /dev/ttyACM0
-   #usb_path: /dev/ttyACM1
-   network_key: !secret zwave_network_key
-   polling_interval: 60000 
+  usb_path: /dev/ttyACM0
+  #usb_path: /dev/ttyACM1
+  network_key: !secret zwave_network_key
+  polling_interval: 60000 
 
 # Verwarming
 evohome:
@@ -259,7 +294,7 @@ evohome:
 #ring:
 #  username: !secret ring_username
 #  password: !secret ring_password
- 
+
 # Sunscreens
 somfy:
   client_id: !secret somfy_key
@@ -275,7 +310,7 @@ notify:
     services:
       - service: hass_notification
         data:
-          target: device/Gertjan
+          target: device/GertjanOP3T
 
 # If This Then That
 #ifttt:

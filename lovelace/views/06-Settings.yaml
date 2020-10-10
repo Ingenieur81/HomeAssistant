@@ -1,0 +1,77 @@
+    #
+    # Settings view
+    #
+    title: Settings
+    icon: mdi:cog
+    panel: false
+    path: Settings
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: gauge
+            name: Batterij Hue binnen sensor
+            unit: '%'
+            entity: sensor.batterij_hue_binnen_sensor
+            severity:
+              red: 10
+              orange: 35
+              yellow: 60
+              green: 85
+          - type: gauge
+            name: Batterij Hue buiten sensor
+            unit: '%'
+            entity: sensor.batterij_hue_buiten_sensor
+            severity:
+              red: 10
+              orange: 35
+              yellow: 60
+              green: 85
+          - type: gauge
+            name: Batterij Hue schakelaar
+            unit: '%'
+            entity:  sensor.woonkamer_schakelaar_battery_level
+            severity:
+              red: 10
+              orange: 35
+              yellow: 60
+              green: 85
+          - type: gauge
+            name: Batterij Deurbel
+            unit: '%'
+            entity: sensor.front_door_battery
+            severity:
+              red: 10
+              orange: 35
+              yellow: 60
+              green: 85
+      - type: vertical-stack
+        cards:
+          - type: gauge
+            name: CPU Usuage
+            unit: '%'
+            entity: sensor.synology_cpu_load_total
+            severity:
+              green: 0
+              yellow: 30
+              red: 50
+          - type: gauge
+            name: Temp disk 1
+            entity: sensor.synology_temperature_sda
+            severity:
+              green: 0
+              yellow: 40
+              red: 50
+          - type: gauge
+            name: Temp disk 2
+            entity: sensor.synology_temperature_sdb
+            severity:
+              green: 0
+              yellow: 40
+              red: 50
+          - type: gauge
+            name: Used %
+            entity: sensor.synology_volume_used_volume_1
+            severity:
+              green: 0
+              yellow: 70
+              red: 85
