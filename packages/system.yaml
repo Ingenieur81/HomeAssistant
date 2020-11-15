@@ -1,0 +1,120 @@
+homeassistant:
+  #customize:
+
+automation:
+  # System
+  
+  # Theming
+  # Dag theme
+  - alias: '[Thema] - Light theme after Sunrise'
+    trigger:
+      - platform: sun
+        event: sunrise
+    action:
+      - service: frontend.set_theme
+        data:
+          # Light theme bij start
+          name: Google - Light
+  # Nacht theme        
+  - alias: '[Thema] - Dark theme after Sunset'
+    trigger:
+      - platform: sun
+        event: sunset
+    action:
+      - service: frontend.set_theme
+        data:
+          # Dark theme bij start
+          name: Google - Dark
+
+  - alias: '[Thema] - Light theme after reboot in day'
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'above_horizon'
+    action:
+      - service: frontend.set_theme
+        data:
+          # Light theme bij zonsopgang
+          name: Google - Light
+
+  - alias: '[Thema] - Dark theme after reboot in night'
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+    action:
+      - service: frontend.set_theme
+        data:
+          # Dark theme bij zonsondergang
+          name: Google - Dark
+    
+  # Update notificatie
+  - alias: '[Update] - Update Available Notification'
+    trigger:
+    - platform: state
+      entity_id: sensor.majorupdateavailable
+      to: 'true'
+    condition:
+    - condition: template
+      value_template: >
+        {{ states.sensor.installed_version.state.split(".")[1] != states.binary_sensor.updater.attributes.newest_version.split(".")[1] }}
+    action:
+    - service: notify.hass_notification
+      data_template:
+        title: "Home Assistant Major Update Notificatie"
+        message: >
+          Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version') }} is available.
+        data:
+          url: "https://www.home-assistant.io/latest-release-notes/"
+        target: device/GertjanOP3T
+
+    # Error notificatie
+  - alias: '[Logging] - Error notificatie'
+    trigger:
+        platform: event
+        event_type: system_log_event
+        event_data:
+          level: ERROR
+    action:
+      - service: notify.hass_notification
+        data_template:
+          title: "Error notificatie"
+          message: >
+            {{ trigger.event.data.message }}
+          target:
+          - device/GertjanOP3T
+
+    # Deurbel
+    # - alias: '[Deurbel] - Verlichting knipperen bij aanbellen avond'
+    #   trigger:
+    #   - platform: state
+    #     entity_id: binary_sensor.front_door_ding
+    #     from: 'off'
+    #     to: 'on'
+    #   condition:
+    #   - condition: state
+    #     entity_id: group.woonkamer
+    #     state: 'on'
+    #   action:
+    #   - service: homeassistant.toggle
+    #     entity_id:
+    #       - group.woonkamer
+    #   - delay: 1
+    #   - service: homeassistant.toggle
+    #     entity_id:
+    #       - group.woonkamer
+    #   - delay: 1
+    #   - service: homeassistant.toggle
+    #     entity_id:
+    #       - group.woonkamer
+    #   - delay: 1
+    #   - service: homeassistant.toggle
+    #     entity_id:
+    #       - group.woonkamer
+    #   - delay: 7

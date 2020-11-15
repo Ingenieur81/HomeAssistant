@@ -11,6 +11,12 @@ automation:
       - platform: state
         entity_id: sensor.wasmachine_washer_machine_state
         to: run
+    condition:
+      - condition: not
+        conditions:   
+        - condition: state
+          entity_id: input_select.droger_status
+          state: Drogen
     action:
       - service: input_select.select_option
         data:

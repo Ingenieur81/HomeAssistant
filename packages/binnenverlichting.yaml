@@ -1,0 +1,280 @@
+homeassistant:
+  #customize:
+
+automation:
+  # Binnenverlichting
+
+  # Uit
+  - alias: '[Woonkamer] - Woonkamerverlichting uit'
+    trigger:
+    - platform: numeric_state
+      entity_id: sensor.gemiddeld_lichtniveau
+      above: 200
+      for:
+        minutes: 3
+    action:
+    - service: light.turn_off
+      data:
+        entity_id:
+        - light.woonkamer
+        - light.keuken
+    - service: homeassistant.turn_off
+      data:
+        entity_id:  
+        - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+        - switch.smart_plug_plant_lamp_switch_3
+
+  # Aan
+  - alias: '[Woonkamer] - Woonkamerverlichting aan'
+    trigger:
+    - platform: numeric_state
+      entity_id: sensor.gemiddeld_lichtniveau
+      below: 150
+      for:
+        minutes: 3
+    condition:
+      condition: and
+      conditions:
+      - condition: state
+        entity_id: light.woonkamer
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.afstandbediening
+        # Als deze input_boolean 'on' is, is de afstandbediening gebruikt om de lampen uit te zetten
+        state: 'off'
+    action:
+    - service: light.turn_on
+      data:
+        entity_id:
+        - light.woonkamer
+        - light.keuken
+        color_temp: 443
+        brightness: 200
+    - service: light.turn_on
+      data:
+        entity_id: light.hal_plafond
+        color_temp: 443
+        brightness: 65
+    - service: homeassistant.turn_on
+      data:
+        entity_id:   
+        - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+        - switch.smart_plug_plant_lamp_switch_3
+
+  # Uit in de nacht
+  - alias: '[Woonkamer] - Woonkamerverlichting uit in de nacht'
+    trigger:
+    - platform: time
+      at: '22:30:00'
+    condition:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: timer.woonkamer
+          state: idle
+        - condition: template
+          value_template: >
+            {{ states.remote.harmony_hub_2.attributes["current_activity"] == "PowerOff" }}
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: light.woonkamer
+            state: 'on'
+          - condition: state
+            entity_id: switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+            state: 'on'
+          - condition: state
+            entity_id: switch.smart_plug_plant_lamp_switch_3
+            state: 'on'
+    action:
+      # random number of seconds between 0 and 60 minutes +1 second (60*60+1)
+    - delay: >
+        {{ range(0, 60*60+1)|random }}
+    - service: light.turn_off
+      data:
+        entity_id:
+        - light.woonkamer
+        - light.keuken
+    - service: homeassistant.turn_off
+      data:
+        entity_id:   
+        - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+        - switch.smart_plug_plant_lamp_switch_3
+  
+  # Afstandbediening
+  - alias: '[Remote] - Afstandbediening gebruikt'
+    trigger:
+    - platform: state
+      entity_id: sensor.afstandbediening_woonkamer
+    condition:
+    - condition: template
+      value_template: >
+        {{ trigger.to_state.state != trigger.from_state.state }}
+    action:
+    - entity_id: input_boolean.afstandbediening
+  # hue/woonkamer_schakelaar/buttonevent 1002 Aan
+  # hue/woonkamer_schakelaar/buttonevent 2002 Feller
+  # hue/woonkamer_schakelaar/buttonevent 3002 Dimmen
+  # hue/woonkamer_schakelaar/buttonevent 4002 Uit
+      service: >
+        {% if states('sensor.afstandbediening_woonkamer')|int == 4002 %}
+          homeassistant.turn_on 
+        {% else %} 
+          homeassistant.turn_off 
+        {% endif %}
+
+  # Afstandbediening reset
+  - alias: '[Remote] - Afstandbediening reset'
+    trigger:
+    - platform: numeric_state
+      entity_id: sensor.gemiddeld_lichtniveau
+      above: 400
+    - platform: time
+      at: '12:00:00'
+    action:
+      service: homeassistant.turn_off
+      entity_id: input_boolean.afstandbediening
+  
+  # Verlichting uit door afstandbediening
+  - alias: '[Woonkamer] - Schakel Zwave woonkamer verlichting uit'
+    trigger:
+    # - entity_id: sensor.afstandbediening_woonkamer
+    #   platform: state
+    #   to: '4002'
+    - platform: state
+      entity_id: light.woonkamer
+      to: 'off'
+    action:
+    - service: homeassistant.turn_off
+      entity_id:  
+      - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+      - switch.smart_plug_plant_lamp_switch_3
+  
+  # Verlichting aan door afstandbediening
+  - alias: '[Woonkamer] - Schakel Zwave woonkamer verlichting aan'
+    trigger:
+    # - entity_id: sensor.afstandbediening_woonkamer
+    #   platform: state
+    #   to: '1002'
+    - platform: state
+      entity_id: light.woonkamer
+      to: 'on'
+    action:
+    - service: homeassistant.turn_on
+      entity_id:  
+      - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+      - switch.smart_plug_plant_lamp_switch_3
+
+  # Regenachtige dag
+  - alias: '[Weer] - Regenachtige dag monitor'
+    trigger:
+    - below: 120
+      entity_id: sensor.gemiddeld_lichtniveau
+      platform: numeric_state
+    - above: 190
+      entity_id: sensor.gemiddeld_lichtniveau
+      platform: numeric_state
+    condition:
+      condition: and
+      conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      - condition: state
+        entity_id: timer.regenachtigedag
+        state: idle
+      - condition: state
+        entity_id: group.familie
+        state: home
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: sensor.br_condition
+          state: rainy
+        - condition: state
+          entity_id: sensor.br_condition
+          state: snowy
+    action:
+    - data:
+        entity_id: timer.regenachtigedag
+      service: timer.start
+    - entity_id: input_boolean.regenachtigedag
+      service: >
+        {% if states('sensor.gemiddeld_lichtniveau')|int < 125 %}
+          homeassistant.turn_on 
+        {% else %} 
+          homeassistant.turn_off 
+        {% endif %}
+
+  # Verlichting uit bij regenachtige dag
+  - alias: '[Weer] - Regenachtige dag verlichting uit'
+    trigger:
+    - platform: state
+      entity_id: input_boolean.regenachtigedag
+      from: 'on'
+      to: 'off'
+    action:
+    - service: light.turn_off
+      data:
+        entity_id:
+        - light.woonkamer
+        - light.keuken
+    - service: homeassistant.turn_off
+      data:
+        entity_id: 
+        - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+        - switch.smart_plug_plant_lamp_switch_3
+
+  # Verlichting aan bij regenachtige dag
+  - alias: '[Weer] - Regenachtige dag verlichting aan'
+    trigger:
+    - platform: state
+      entity_id: input_boolean.regenachtigedag
+      from: 'off'
+      to: 'on'
+    condition:
+    - condition: state
+      entity_id: sun.sun
+      state: above_horizon
+    action:
+    - service: light.turn_on
+      data:
+        entity_id:
+        - light.woonkamer
+        - light.keuken
+    - service: homeassistant.turn_on
+      data:
+        entity_id: 
+        - switch.shenzhen_neo_electronics_co_ltd_power_plug_12a_switch
+        - switch.smart_plug_plant_lamp_switch_3
+
+  # Keukenverlichting
+  - alias: '[Keuken] - Dim keukenverlichting om 20u'
+    trigger:
+    - platform: time
+      at: '20:00:00'
+    condition:
+    - condition: state
+      entity_id: light.keuken
+      state: 'on'
+    action:
+    # random number of seconds between 0 and 5 minutes +1 second (5*60+1)
+    - delay: >
+        {{ range(0, 5*60+1)|random }}
+    - service: light.turn_on
+      data:
+        entity_id:
+        - light.keuken
+        color_temp: 443
+        brightness: 100
+
+  # Beweging woonkamer
+  - alias: '[Beweging] - Timer voor beweging in de woonkamer'
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.aeotec_limited_zwa005_trisensor_sensor, binary_sensor.woonkamer_sensor_motion
+      to: 'off'
+    action:
+    - service: timer.start
+      data:
+        entity_id: timer.woonkamer

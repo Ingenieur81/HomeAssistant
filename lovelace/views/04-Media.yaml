@@ -6,9 +6,26 @@
     panel: false
     path: Media
     cards:
-      - entity: remote.harmony_hub_2
-        type: media-control
-        icon: mdi:remote-tv
+      - type: vertical-stack
+        cards:
+          - type: picture-glance
+            title: Harmony
+            entities:
+              - switch.tv_kijken
+              - switch.netflix
+              - switch.media_center
+              - switch.ps4
+              - switch.tv
+              - switch.switch
+            state_image:
+              "PowerOff": /local/images/PowerOff.png
+              "TV Kijken": /local/images/TVL.png
+              "Netflix kijken": /local/images/NetflixL.png
+              "Media Center": /local/images/MediaCenterL.png
+              "Gaming PS4": /local/images/PS4L.png
+              "Gaming Switch": /local/images/NintendoSwitchL.png
+              "Smart TV": /local/images/SmartTvL.png
+            entity: sensor.harmony_activity
       - entity: media_player.playstation_4
         type: media-control
         icon: mdi:sony-playstation

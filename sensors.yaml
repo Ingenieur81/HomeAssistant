@@ -229,20 +229,20 @@
   #- platform: ring
 
   # NS
-  - platform: nederlandse_spoorwegen
-    #email: !secret ns_username
-    api_key: !secret ns_prim_api
-    routes:
-    - name: Hoofddorp-Leiden
-      from: Hfd
-      to: Ledn
+  # - platform: nederlandse_spoorwegen
+  #   #email: !secret ns_username
+  #   api_key: !secret ns_prim_api
+  #   routes:
+  #   - name: Hoofddorp-Leiden
+  #     from: Hfd
+  #     to: Ledn
   
   - platform: template
     sensors:
-      treintijdvolgende:
-        friendly_name: "Volgende Trein Hoofddorp"
-        value_template: >
-          {{ state_attr('sensor.hoofddorp_leiden', 'next') }}
+      # treintijdvolgende:
+      #   friendly_name: "Volgende Trein Hoofddorp"
+      #   value_template: >
+      #     {{ state_attr('sensor.hoofddorp_leiden', 'next') }}
       verbruikelectra:
         friendly_name: "Huidige electriciteit verbruik"
         unit_of_measurement: W

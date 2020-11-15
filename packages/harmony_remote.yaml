@@ -1,0 +1,138 @@
+homeassistant:
+  #customize:
+
+sensor:
+  - platform: template
+    sensors:
+      harmony_activity:
+        value_template: >
+          {% if is_state("remote.harmony_hub_2", 'on') %}
+            {{ states.remote.harmony_hub_2.attributes.current_activity }}
+          {% else %}
+            PowerOff
+          {% endif %}
+
+switch:
+# "Activities":
+#   "-1": "PowerOff",
+#   "36609040": "TV Kijken",
+#   "36908573": "Netflix kijken",
+#   "36908669": "Media Center",
+#   "36948876": "Gaming PS4",
+#   "37989721": "Smart TV",
+#   "44015007": "Gaming Switch"
+  - platform: template
+    switches:
+
+      tv_kijken:
+        value_template: "{{ is_state_attr('remote.harmony_hub_2', 'current_activity', 'TV Kijken') }}"
+        turn_on:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'TV Kijken'
+        turn_off:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'PowerOff'
+        icon_template: >-
+          {% if is_state('switch.tv_kijken', 'off') %}
+            mdi:television-off
+          {% else %}
+            mdi:television-play
+          {% endif %}
+
+      netflix:
+        value_template: "{{ is_state_attr('remote.harmony_hub_2', 'current_activity', 'Netflix kijken') }}"
+        turn_on:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'Netflix kijken'
+        turn_off:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'PowerOff'
+        icon_template: >-
+          {% if is_state('switch.netflix', 'off') %}
+            mdi:netflix
+          {% else %}
+            mdi:netflix
+          {% endif %}
+      
+      media_center:
+        value_template: "{{ is_state_attr('remote.harmony_hub_2', 'current_activity', 'Media Center') }}"
+        turn_on:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'Media Center'
+        turn_off:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'PowerOff'
+        icon_template: >-
+          {% if is_state('switch.media_center', 'off') %}
+            mdi:apple
+          {% else %}
+            mdi:apple
+          {% endif %}
+
+      ps4:
+        value_template: "{{ is_state_attr('remote.harmony_hub_2', 'current_activity', 'Gaming PS4') }}"
+        turn_on:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'Gaming PS4'
+        turn_off:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'PowerOff'
+        icon_template: >-
+          {% if is_state('switch.ps4', 'off') %}
+            mdi:sony-playstation
+          {% else %}
+            mdi:sony-playstation
+          {% endif %}
+      tv:
+        value_template: "{{ is_state_attr('remote.harmony_hub_2', 'current_activity', 'Smart TV') }}"
+        turn_on:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'Smart TV'
+        turn_off:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'PowerOff'
+        icon_template: >-
+          {% if is_state('switch.tv', 'off') %}
+            mdi:television-off
+          {% else %}
+            mdi:television-play
+          {% endif %}
+
+      switch:
+        value_template: "{{ is_state_attr('remote.harmony_hub_2', 'current_activity', 'Gaming Switch') }}"
+        turn_on:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'Gaming Switch'
+        turn_off:
+          service: remote.turn_on
+          data:
+            entity_id: remote.harmony_hub_2
+            activity: 'PowerOff'
+        icon_template: >-
+          {% if is_state('switch.switch', 'off') %}
+            mdi:nintendo-switch
+          {% else %}
+            mdi:nintendo-switch
+          {% endif %}

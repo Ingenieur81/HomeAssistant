@@ -1,0 +1,54 @@
+homeassistant:
+  #customize:
+
+automation:
+  # Verlichting aan het huis
+
+  # Uit
+  - alias: '[Tuin] - Buitenverlichting uit'
+    trigger:
+    - platform: numeric_state
+      entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+      above: 100
+      for:
+        minutes: 3
+    action:
+    - service: switch.turn_off
+      data:
+        entity_id: group.buitenverlichting
+    - service: switch.turn_off
+      data:
+        entity_id: group.tuinverlichting
+
+  # Aan
+  - alias: '[Tuin] - Buitenverlichting aan'
+    trigger:
+    - platform: numeric_state
+      entity_id: sensor.hue_outdoor_motion_sensor_1_light_level
+      below: 50
+      for:
+        minutes: 3
+    action:
+    - service: switch.turn_on
+      data:
+        entity_id: group.buitenverlichting
+    - service: switch.turn_on
+      data:
+        entity_id: group.tuinverlichting
+
+
+  # Tuinverlichting uit
+  - alias: '[Tuin] - Tuinverlichting uit in de nacht'
+    trigger:
+    - platform: time
+      at: '23:00:00'
+    condition:
+    - condition: state
+      entity_id: group.tuinverlichting
+      state: 'on'
+    action:
+      # random number of seconds between 5 (5*60) and 60 minutes +1 second (60*60+1)
+    - delay: >
+        {{ range(5*60, 60*60+1)|random }}
+    - service: homeassistant.turn_off
+      entity_id: group.tuinverlichting

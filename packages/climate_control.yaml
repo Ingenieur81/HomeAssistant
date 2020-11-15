@@ -1,0 +1,120 @@
+homeassistant:
+  #customize:
+
+automation:
+  # Airconditioning
+  # Overloop koelen
+  - alias: '[Airco] - Zet airco overloop op koelen'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.gemiddelde_temperature_boven
+        above: 24
+    condition:
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.br_minimum_temperature_1d
+          above: 18
+        - condition: numeric_state
+          entity_id: sensor.br_temperature
+          above: 28
+      - condition: state
+        entity_id: input_boolean.vakantie_mode
+        state: 'off'
+    action:
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.overloop
+          fan_mode: '5'
+      - service: climate.set_temperature
+        data:
+          entity_id: climate.overloop
+          temperature: 18
+          hvac_mode: cool
+      - service: climate.turn_on
+        entity_id: climate.overloop
+  
+  # Zolder koelen
+  - alias: '[Airco] - Zet airco zolder op koelen'
+    trigger:
+      - platform: template
+        value_template: >
+            {{ states.climate.zolder.attributes['current_temperature'] | round(1) > 24 }}
+    condition:
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          entity_id: sensor.br_minimum_temperature_1d
+          above: 18
+        - condition: numeric_state
+          entity_id: sensor.br_temperature
+          above: 28
+      - condition: state
+        entity_id: input_boolean.vakantie_mode
+        state: 'off'
+    action:
+      - service: climate.set_temperature
+        data:
+          entity_id: climate.zolder
+          temperature: 18
+          hvac_mode: cool
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.zolder
+          fan_mode: 'Auto'
+      - service: climate.set_swing_mode
+        data:
+          entity_id: climate.zolder
+          swing_mode: '3D'
+      - service: climate.turn_on
+        entity_id: climate.zolder
+
+  # Zolder verwarmen
+  - alias: '[Airco] - Zet airco zolder op verwarmen'
+    trigger:
+      - platform: template
+        value_template: >
+            {{ states.climate.zolder.attributes['current_temperature'] | round(1) < 14 }}
+    condition:
+      - condition: state
+        entity_id: group.familie
+        state: home
+      - condition: state
+        entity_id: input_boolean.vakantie_mode
+        state: 'off'
+    action:
+      - service: climate.set_temperature
+        data:
+          entity_id: climate.zolder
+          temperature: 18
+          hvac_mode: heat
+      - service: climate.set_fan_mode
+        data:
+          entity_id: climate.zolder
+          fan_mode: 'Auto'
+      - service: climate.set_swing_mode
+        data:
+          entity_id: climate.zolder
+          swing_mode: '3D'
+      - service: climate.turn_on
+        entity_id: climate.zolder
+
+  # Overloop uit
+  - alias: '[Airco] - Zet airco overloop uit'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.gemiddelde_temperature_boven
+        below: 18
+    action:
+      - service: climate.turn_off
+        entity_id: climate.zolder
+
+  # Zolder uit
+  - alias: '[Airco] - Zet airco zolder uit'
+    trigger:
+      - platform: template
+        value_template: >
+            {{ 18 <= states.climate.overloop.attributes['current_temperature'] | round(1) < 19 }}
+    action:
+      - service: climate.turn_off
+        entity_id: climate.zolder

@@ -30,11 +30,24 @@ default_config:
 frontend:
   #themes: !include themes.yaml
   themes: !include_dir_merge_named themes
-  javascript_version: latest
+  # javascript_version: latest
 
 # System logging to trigger automations
 system_log:
   fire_event: true
+
+# Logging of information, no need for anything below warn level
+logger:
+  default: error
+  logs:
+    # log level for HA core
+    homeassistant.core: info
+    # log level for MQTT integration
+    homeassistant.components.mqtt: warning
+    # log level for all python scripts
+    homeassistant.components.python_script: warning
+    # log level for the `aiohttp` Python package
+    aiohttp: error
 
 # Recording of states of the last 2 days only
 recorder:
@@ -162,10 +175,6 @@ history:
     - sun.sun
     - timer.woonkamer
     - timer.regenachtigedag
-
-# Logging of information, no need for anything below warn level
-logger:
-  default: warn
 
 # influxdb
 
@@ -321,10 +330,18 @@ ffmpeg:
 
 # Z-Wave network panel	
 panel_custom:
-  - name: zwavegraph2
+  - name: zwave-graph-panel
+    url_path: zwave-graph
     sidebar_title: Z-Wave Graph
-    sidebar_icon: mdi:access-point-network
-    url_path: zwave
+    sidebar_icon: mdi:z-wave
+    module_url: /local/zwavegraph3.js
+    config:
+      # ranker - pick one: network-simplex, tight-tree, longest-path
+      ranker: network-simplex
+      # edge_visibility - pick one: relevant, all
+      edge_visibility: relevant
+      # grouping - pick one: z-wave, ungrouped
+      grouping: z-wave
 
 # modem for presence detector
 device_tracker:

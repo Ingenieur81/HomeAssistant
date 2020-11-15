@@ -131,21 +131,23 @@ views:
         unit: C
       - type: entity-filter
         state_filter:
-        - operator: "<"
+        - operator: "<="
           value: 5
         card:
           title: "Onderhouds taken"
         entities:
-          - entity: sensor.dagen_sinds_plant_lamp_water_geven
+          - entity: sensor.dagen_tot_plant_lamp_water_geven
             icon: mdi:flower
-          - entity: sensor.dagen_sinds_planten_water_geven
+          - entity: sensor.dagen_tot_planten_water_geven
             icon: mdi:flower
-          - entity: sensor.dagen_sinds_quooker_onderhoud
+          - entity: sensor.dagen_tot_quooker_onderhoud
             icon: mdi:water-pump
-          - entity: sensor.dagen_sinds_quooker_zwart_pijpje
+          - entity: sensor.dagen_tot_quooker_zwart_pijpje
             icon: mdi:water-pump
-          - entity: sensor.dagen_sinds_autobanden_draaien
+          - entity: sensor.dagen_tot_autobanden_draaien
             icon: mdi:car-tire-alert
+          - entity: sensor.dagen_tot_airco_filter
+            icon: mdi:air-conditioner
       - type: entities
         title: Werk Taak Bij
         show_header_toggle: false
